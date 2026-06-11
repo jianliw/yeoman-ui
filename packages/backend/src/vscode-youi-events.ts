@@ -1,13 +1,15 @@
 import * as vscode from "vscode";
-import { isEmpty, size, isNil } from "lodash";
+import { isEmpty, isNil, set } from "lodash";
 import { YouiEvents } from "./youi-events";
 import { IRpc } from "@sap-devx/webview-rpc/out.ext/rpc-common";
 import { GeneratorOutput } from "./vscode-output";
 import { IChildLogger } from "@vscode-logging/logger";
 import { getClassLogger } from "./logger/logger-wrapper";
 import { getImage } from "./images/messageImages";
-import { AppWizard, MessageType, Severity } from "@sap-devx/yeoman-ui-types";
-import { WorkspaceFile } from "./utils/workspaceFile";
+import { AppWizard, MessageType, Severity, IBannerProps } from "@sap-devx/yeoman-ui-types";
+import { FolderUriConfig, getFolderUri, getValidFolderUri, WorkspaceFile, WsFoldersToAdd } from "./utils/workspaceFile";
+import { Constants } from "./utils/constants";
+import { getFileSchemeWorkspaceFolders } from "./utils/workspaceFolders";
 
 class YoUiAppWizard extends AppWizard {
   constructor(private readonly events: VSCodeYouiEvents) {
@@ -34,6 +36,10 @@ class YoUiAppWizard extends AppWizard {
   public setHeaderTitle(title: string, additionalInfo?: string): void {
     this.events.setAppWizardHeaderTitle(title, additionalInfo);
   }
+
+  public setBanner(bannerProps: IBannerProps): void {
+    this.events.setAppWizardBanner(bannerProps);
+  }
 }
 
 export class VSCodeYouiEvents implements YouiEvents {
@@ -58,13 +64,19 @@ export class VSCodeYouiEvents implements YouiEvents {
     void this.rpc.invoke("setHeaderTitle", [title, additionalInfo]);
   }
 
+  public setAppWizardBanner(bannerProps: IBannerProps): void {
+    // This method allows generators to update the App Wizard banner
+    void this.rpc.invoke("setBanner", [bannerProps]);
+  }
+
   public doGeneratorDone(
     success: boolean,
     message: string,
     selectedWorkspace: string,
     type: string,
-    targetFolderPath?: string
+    targetFolderPath?: string,
   ): void {
+    set(this.webviewPanel, Constants.GENERATOR_COMPLETED, success);
     this.doClose();
     void this.showDoneMessage(success, message, selectedWorkspace, type, targetFolderPath);
   }
@@ -153,7 +165,7 @@ export class VSCodeYouiEvents implements YouiEvents {
         await new Promise((resolve) => {
           this.resolveFunc = resolve;
         });
-      }
+      },
     );
   }
 
@@ -168,33 +180,87 @@ export class VSCodeYouiEvents implements YouiEvents {
     errorMmessage: string,
     selectedWorkspace: string,
     type: string,
-    targetFolderPath?: string
+    targetFolderPath?: string,
   ): Thenable<any> {
     this.resolveInstallingProgress();
 
     if (success) {
       if (!isNil(targetFolderPath)) {
-        const targetFolderUri: vscode.Uri = vscode.Uri.file(targetFolderPath);
-
-        if (selectedWorkspace === this.messages.open_in_a_new_workspace) {
-          void vscode.commands.executeCommand("vscode.openFolder", targetFolderUri);
-        } else if (selectedWorkspace === this.messages.add_to_workspace) {
-          const wsFoldersQuantity = size(vscode.workspace.workspaceFolders);
-          vscode.workspace.updateWorkspaceFolders(wsFoldersQuantity, null, {
-            uri: targetFolderUri,
-          });
-          if (isNil(vscode.workspace.workspaceFile)) {
-            const workspaceFileUri = WorkspaceFile.create(targetFolderUri.fsPath);
-            void vscode.commands.executeCommand("vscode.openFolder", workspaceFileUri);
-          }
+        const folderUri = getFolderUri(targetFolderPath);
+        if (folderUri) {
+          const folderUriConfig: FolderUriConfig = getValidFolderUri(folderUri);
+          this.addToWorkspaceUriFlow(selectedWorkspace, folderUriConfig);
+        } else {
+          this.addToWorkspacePathFlow(targetFolderPath, selectedWorkspace);
         }
       }
-
       const successInfoMessage = this.getSuccessInfoMessage(selectedWorkspace, type);
-      return vscode.window.showInformationMessage(successInfoMessage);
+      return successInfoMessage // show the message only if it is not empty
+        ? vscode.window.showInformationMessage(successInfoMessage)
+        : Promise.resolve();
     }
 
     return vscode.window.showErrorMessage(errorMmessage);
+  }
+
+  private addToWorkspacePathFlow(targetFolderPath: string, selectedWorkspace: string) {
+    const targetFolderUri: vscode.Uri = vscode.Uri.file(targetFolderPath);
+    if (selectedWorkspace === this.messages.open_in_a_new_workspace) {
+      void vscode.commands.executeCommand("vscode.openFolder", targetFolderUri);
+    } else if (selectedWorkspace === this.messages.add_to_workspace) {
+      const wsFoldersToAdd: WsFoldersToAdd = {
+        uri: targetFolderUri,
+      };
+      this.addOrCreateProjectWorkspace(wsFoldersToAdd);
+      if (isNil(vscode.workspace.workspaceFile)) {
+        const workspaceFileUri = WorkspaceFile.createWsWithPath(targetFolderUri);
+        void vscode.commands.executeCommand("vscode.openFolder", workspaceFileUri);
+      }
+    }
+  }
+
+  private addToWorkspaceUriFlow(selectedWorkspace: string, folderUriConfig: FolderUriConfig) {
+    if (selectedWorkspace === this.messages.open_in_a_new_workspace) {
+      const workspaceFileUri = WorkspaceFile.createWsWithUri(folderUriConfig);
+      void vscode.commands.executeCommand("vscode.openFolder", workspaceFileUri);
+    } else if (selectedWorkspace === this.messages.add_to_workspace) {
+      const targetFolderUri = vscode.Uri.parse(folderUriConfig.uri);
+      const uniqueProjectName = this.getUniqueProjectName(folderUriConfig.name);
+      const wsFoldersToAdd: WsFoldersToAdd = {
+        uri: targetFolderUri,
+        name: uniqueProjectName,
+      };
+      this.addOrCreateProjectWorkspace(wsFoldersToAdd);
+      if (isNil(vscode.workspace.workspaceFile)) {
+        const workspaceFileUri = WorkspaceFile.createWsWithUri(folderUriConfig);
+        void vscode.commands.executeCommand("vscode.openFolder", workspaceFileUri);
+      }
+    } else {
+      WorkspaceFile.createWsWithUri(folderUriConfig);
+    }
+  }
+
+  private getUniqueProjectName(baseName: string): string {
+    const existingNames = getFileSchemeWorkspaceFolders().map((folder) => folder.name);
+    if (!existingNames.includes(baseName)) {
+      return baseName;
+    }
+
+    let counter = 1;
+    let uniqueName = `${baseName}(${counter})`;
+
+    while (existingNames.includes(uniqueName)) {
+      counter++;
+      uniqueName = `${baseName}(${counter})`;
+    }
+
+    return uniqueName;
+  }
+
+  private addOrCreateProjectWorkspace(wsFoldersToAdd: WsFoldersToAdd) {
+    const fileSchemeWorkspaces = getFileSchemeWorkspaceFolders();
+    const insertPosition = fileSchemeWorkspaces.length;
+    vscode.workspace.updateWorkspaceFolders(insertPosition, null, wsFoldersToAdd);
   }
 
   private getSuccessInfoMessage(selectedWorkspace: string, type: string): string {
@@ -209,6 +275,8 @@ export class VSCodeYouiEvents implements YouiEvents {
       }
     } else if (type === "module") {
       successInfoMessage = this.messages.artifact_generated_module;
+    } else if (type === "") {
+      successInfoMessage = ""; // do not show information message
     }
     return successInfoMessage;
   }

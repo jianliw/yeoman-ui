@@ -3,6 +3,190 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.25.0](https://github.com/SAP/yeoman-ui/compare/v1.23.0...v1.25.0) (2026-05-13)
+
+### Features
+
+- **yeoman UI:** 37088 output tab link ([#940](https://github.com/SAP/yeoman-ui/issues/940)) ([f6e68ce](https://github.com/SAP/yeoman-ui/commit/f6e68ce84c1c8d79b81ea54a7fa6d6269d6aaa69)), closes [#37088](https://github.com/SAP/yeoman-ui/issues/37088) [#37088](https://github.com/SAP/yeoman-ui/issues/37088) [SAP/inquirer-gui#37088](https://github.com/SAP/inquirer-gui/issues/37088) [#37088](https://github.com/SAP/yeoman-ui/issues/37088)
+
+# [1.24.0](https://github.com/SAP/yeoman-ui/compare/v1.23.0...v1.24.0) (2026-05-12)
+
+### Features
+
+- **yeoman UI:** 37088 output tab link ([#940](https://github.com/SAP/yeoman-ui/issues/940)) ([f6e68ce](https://github.com/SAP/yeoman-ui/commit/f6e68ce84c1c8d79b81ea54a7fa6d6269d6aaa69)), closes [#37088](https://github.com/SAP/yeoman-ui/issues/37088) [#37088](https://github.com/SAP/yeoman-ui/issues/37088) [SAP/inquirer-gui#37088](https://github.com/SAP/inquirer-gui/issues/37088) [#37088](https://github.com/SAP/yeoman-ui/issues/37088)
+
+# [1.23.0](https://github.com/SAP/yeoman-ui/compare/v1.21.0...v1.23.0) (2026-03-24)
+
+**Note:** Version bump only for package yeoman-ui-frontend
+
+# [1.22.0](https://github.com/SAP/yeoman-ui/compare/v1.21.0...v1.22.0) (2026-02-10)
+
+**Note:** Version bump only for package yeoman-ui-frontend
+
+# [1.21.0](https://github.com/SAP/yeoman-ui/compare/v1.20.5...v1.21.0) (2025-12-10)
+
+**Note:** Version bump only for package yeoman-ui-frontend
+
+## [1.20.5](https://github.com/SAP/yeoman-ui/compare/v1.20.3...v1.20.5) (2025-12-04)
+
+**Note:** Version bump only for package yeoman-ui-frontend
+
+## [1.20.4](https://github.com/SAP/yeoman-ui/compare/v1.20.3...v1.20.4) (2025-12-04)
+
+**Note:** Version bump only for package yeoman-ui-frontend
+
+## [1.20.3](https://github.com/SAP/yeoman-ui/compare/v1.20.2...v1.20.3) (2025-12-04)
+
+**Note:** Version bump only for package yeoman-ui-frontend
+
+## [1.20.2](https://github.com/SAP/yeoman-ui/compare/v1.20.1...v1.20.2) (2025-10-28)
+
+### Bug Fixes
+
+- **App.vue:** missing padding on navigation left-hand panel ([#914](https://github.com/SAP/yeoman-ui/issues/914)) ([5b7df1b](https://github.com/SAP/yeoman-ui/commit/5b7df1b92e66c35b6a7cbcfc69e4b24e485bde24))
+
+## [1.20.1](https://github.com/SAP/yeoman-ui/compare/v1.20.0...v1.20.1) (2025-07-23)
+
+**Note:** Version bump only for package yeoman-ui-frontend
+
+# [1.20.0](https://github.com/SAP/yeoman-ui/compare/v1.19.6...v1.20.0) (2025-07-14)
+
+**Note:** Version bump only for package yeoman-ui-frontend
+
+## [1.19.6](https://github.com/SAP/yeoman-ui/compare/v1.19.5...v1.19.6) (2025-07-09)
+
+**Note:** Version bump only for package yeoman-ui-frontend
+
+## [1.19.5](https://github.com/SAP/yeoman-ui/compare/v1.19.4...v1.19.5) (2025-06-10)
+
+**Note:** Version bump only for package yeoman-ui-frontend
+
+## [1.19.4](https://github.com/SAP/yeoman-ui/compare/v1.19.3...v1.19.4) (2025-06-10)
+
+**Note:** Version bump only for package yeoman-ui-frontend
+
+## [1.19.3](https://github.com/SAP/yeoman-ui/compare/v1.19.2...v1.19.3) (2025-05-22)
+
+### Bug Fixes
+
+- prevent webview default `contextmenu` ([#889](https://github.com/SAP/yeoman-ui/issues/889)) ([530b577](https://github.com/SAP/yeoman-ui/commit/530b577040e06c845d98f4a72dc9fabcbba8cbae))
+
+## [1.19.2](https://github.com/SAP/yeoman-ui/compare/v1.19.1...v1.19.2) (2025-05-12)
+
+**Note:** Version bump only for package yeoman-ui-frontend
+
+## [1.19.1](https://github.com/SAP/yeoman-ui/compare/v1.19.0...v1.19.1) (2025-04-29)
+
+**Note:** Version bump only for package yeoman-ui-frontend
+
+# [1.19.0](https://github.com/SAP/yeoman-ui/compare/v1.18.0...v1.19.0) (2025-03-31)
+
+**Note:** Version bump only for package yeoman-ui-frontend
+
+# [1.18.0](https://github.com/SAP/yeoman-ui/compare/v1.17.1...v1.18.0) (2025-03-05)
+
+### Features
+
+- support workspace with URL ([#866](https://github.com/SAP/yeoman-ui/issues/866)) ([ba114f9](https://github.com/SAP/yeoman-ui/commit/ba114f9ce903258b4cec523241049cd30de3a567))
+
+## [1.17.1](https://github.com/SAP/yeoman-ui/compare/v1.17.0...v1.17.1) (2025-01-09)
+
+**Note:** Version bump only for package yeoman-ui-frontend
+
+# [1.17.0](https://github.com/SAP/yeoman-ui/compare/v1.16.9...v1.17.0) (2025-01-08)
+
+**Note:** Version bump only for package yeoman-ui-frontend
+
+## [1.16.9](https://github.com/SAP/yeoman-ui/compare/v1.16.8...v1.16.9) (2024-11-18)
+
+**Note:** Version bump only for package yeoman-ui-frontend
+
+## [1.16.8](https://github.com/SAP/yeoman-ui/compare/v1.16.7...v1.16.8) (2024-11-05)
+
+**Note:** Version bump only for package yeoman-ui-frontend
+
+## [1.16.7](https://github.com/SAP/yeoman-ui/compare/v1.16.6...v1.16.7) (2024-10-06)
+
+**Note:** Version bump only for package yeoman-ui-frontend
+
+## [1.16.6](https://github.com/SAP/yeoman-ui/compare/v1.16.5...v1.16.6) (2024-08-22)
+
+**Note:** Version bump only for package yeoman-ui-frontend
+
+## [1.16.5](https://github.com/SAP/yeoman-ui/compare/v1.16.4...v1.16.5) (2024-06-13)
+
+**Note:** Version bump only for package yeoman-ui-frontend
+
+## [1.16.4](https://github.com/SAP/yeoman-ui/compare/v1.16.3...v1.16.4) (2024-05-27)
+
+**Note:** Version bump only for package yeoman-ui-frontend
+
+## [1.16.3](https://github.com/SAP/yeoman-ui/compare/v1.16.2...v1.16.3) (2024-04-25)
+
+**Note:** Version bump only for package yeoman-ui-frontend
+
+## [1.16.2](https://github.com/SAP/yeoman-ui/compare/v1.16.1...v1.16.2) (2024-04-11)
+
+**Note:** Version bump only for package yeoman-ui-frontend
+
+## [1.16.1](https://github.com/SAP/yeoman-ui/compare/v1.16.0...v1.16.1) (2024-03-20)
+
+**Note:** Version bump only for package yeoman-ui-frontend
+
+# [1.16.0](https://github.com/SAP/yeoman-ui/compare/v1.15.0...v1.16.0) (2024-03-19)
+
+**Note:** Version bump only for package yeoman-ui-frontend
+
+# [1.15.0](https://github.com/SAP/yeoman-ui/compare/v1.14.7...v1.15.0) (2024-03-04)
+
+### Bug Fixes
+
+- [DEVXBUGS-11627] YUI prompts inputs are laggy on BAS - crashing generator ([#820](https://github.com/SAP/yeoman-ui/issues/820)) ([ba6b89e](https://github.com/SAP/yeoman-ui/commit/ba6b89ec43954ba8de240b3dc980218af0a09a70))
+
+## [1.14.7](https://github.com/SAP/yeoman-ui/compare/v1.14.6...v1.14.7) (2024-02-20)
+
+### Bug Fixes
+
+- [DEVXBUGS-11619] allows selection of list separators causing crashes ([#814](https://github.com/SAP/yeoman-ui/issues/814)) ([4c28a62](https://github.com/SAP/yeoman-ui/commit/4c28a62c2d604ada65d05826982582e1906f2223))
+
+## [1.14.6](https://github.com/SAP/yeoman-ui/compare/v1.14.5...v1.14.6) (2024-02-20)
+
+**Note:** Version bump only for package yeoman-ui-frontend
+
+## [1.14.5](https://github.com/SAP/yeoman-ui/compare/v1.14.4...v1.14.5) (2024-02-20)
+
+**Note:** Version bump only for package yeoman-ui-frontend
+
+## [1.14.4](https://github.com/SAP/yeoman-ui/compare/v1.14.3...v1.14.4) (2024-02-08)
+
+**Note:** Version bump only for package yeoman-ui-frontend
+
+## [1.14.3](https://github.com/SAP/yeoman-ui/compare/v1.14.2...v1.14.3) (2024-01-31)
+
+### Bug Fixes
+
+- revert usage `vsce` instead of `vscode/vsce` ([#797](https://github.com/SAP/yeoman-ui/issues/797)) ([9ad206c](https://github.com/SAP/yeoman-ui/commit/9ad206c75608ae58b1d9537d1e6d4d7878df4d8e))
+
+## [1.14.2](https://github.com/SAP/yeoman-ui/compare/v1.14.1...v1.14.2) (2024-01-30)
+
+### Bug Fixes
+
+- reset yeomanui panel state when closing window ([#796](https://github.com/SAP/yeoman-ui/issues/796)) ([eb3ba2f](https://github.com/SAP/yeoman-ui/commit/eb3ba2fa9118b0c078f4895f37222b0ddce7713d))
+
+## [1.14.1](https://github.com/SAP/yeoman-ui/compare/v1.14.0...v1.14.1) (2024-01-17)
+
+**Note:** Version bump only for package yeoman-ui-frontend
+
+# [1.14.0](https://github.com/SAP/yeoman-ui/compare/v1.13.2...v1.14.0) (2024-01-16)
+
+### Features
+
+- **platform:** frontend Vue 3 and Vite ([#782](https://github.com/SAP/yeoman-ui/issues/782)) ([a129035](https://github.com/SAP/yeoman-ui/commit/a1290358df9c48dfd856eb7d54e38cec31c0302c))
+
+## [1.13.2](https://github.com/SAP/yeoman-ui/compare/v1.13.1...v1.13.2) (2024-01-09)
+
+**Note:** Version bump only for package yeoman-ui-frontend
+
 ## [1.13.1](https://github.com/SAP/yeoman-ui/compare/v1.13.0...v1.13.1) (2023-12-13)
 
 **Note:** Version bump only for package yeoman-ui-frontend

@@ -4,7 +4,7 @@ import { createSandbox, SinonSandbox, SinonMock } from "sinon";
 import * as _ from "lodash";
 import { IMethod, IPromiseCallbacks, IRpc } from "@sap-devx/webview-rpc/out.ext/rpc-common";
 import * as messages from "../src/messages";
-import { MessageType, Severity } from "@sap-devx/yeoman-ui-types";
+import { MessageType, Severity, IBannerProps } from "@sap-devx/yeoman-ui-types";
 import { GeneratorOutput } from "../src/vscode-output";
 import { Constants } from "../src/utils/constants";
 import * as loggerWrapper from "../src/logger/logger-wrapper";
@@ -230,6 +230,19 @@ describe("vscode-youi-events unit test", () => {
     events.setAppWizardHeaderTitle(testTitle, testInfo);
   });
 
+  it("setBanner", () => {
+    const bannerProps: IBannerProps = {
+      text: "Test Banner",
+      ariaLabel: "Test Banner Label",
+      displayBannerForStep: "testStep",
+      icon: { source: "mdi-check-circle", type: "mdi" },
+      action: { text: "Click Me", url: "https://example.com" },
+      triggerActionFrom: "banner",
+    };
+    rpcMock.expects("invoke").withExactArgs("setBanner", [bannerProps]);
+    events.setAppWizardBanner(bannerProps);
+  });
+
   describe("showProgress", () => {
     it("getAppWizard - no message received ---> show default Information message with Progress button", () => {
       const appWizard = events.getAppWizard();
@@ -287,16 +300,18 @@ describe("vscode-youi-events unit test", () => {
 
   describe("doGeneratorDone", () => {
     const createAndClose = "Create the project and close it for future use";
-    const openNewWorkspace = "Open the project in a stand-alone folder";
+    const openNewWorkspace = "Open the project in a stand-alone";
     const addToWorkspace = "Open the project in a multi-root workspace";
 
     it("on success, project path and workspace folder are Windows style ---> the project added to current workspace", () => {
       eventsMock.expects("doClose");
-      _.set(vscode, "workspace.workspaceFolders", [
-        { uri: { fsPath: "rootFolderPath" } },
-        { uri: { fsPath: "testRoot" } },
-      ]);
-      _.set(vscode, "workspace.workspaceFile", "/workspace/file/path");
+      sandbox
+        .stub(vscode.workspace, "workspaceFolders")
+        .value([
+          { uri: { fsPath: "rootFolderPath", scheme: "file" } },
+          { uri: { fsPath: "testRoot", scheme: "file" } },
+        ]);
+      sandbox.stub(vscode.workspace, "workspaceFile").value("/workspace/file/path");
       windowMock
         .expects("showInformationMessage")
         .withExactArgs(messages.default.artifact_generated_project_add_to_workspace)
@@ -307,11 +322,13 @@ describe("vscode-youi-events unit test", () => {
 
     it("on success, project path is already openned in workspace ---> the project added to current workspace", () => {
       eventsMock.expects("doClose");
-      _.set(vscode, "workspace.workspaceFolders", [
-        { uri: { fsPath: "rootFolderPath" } },
-        { uri: { fsPath: "testDestinationRoot" } },
-      ]);
-      _.set(vscode, "workspace.workspaceFile", "/workspace/file/path");
+      sandbox
+        .stub(vscode.workspace, "workspaceFolders")
+        .value([
+          { uri: { fsPath: "rootFolderPath", scheme: "file" } },
+          { uri: { fsPath: "testDestinationRoot", scheme: "file" } },
+        ]);
+      sandbox.stub(vscode.workspace, "workspaceFile").value("/workspace/file/path");
       windowMock
         .expects("showInformationMessage")
         .withExactArgs(messages.default.artifact_generated_project_add_to_workspace)
@@ -322,10 +339,12 @@ describe("vscode-youi-events unit test", () => {
 
     it("on success, project path parent folder is already openned in workspace ---> the user changed to create and close the project for later use", () => {
       eventsMock.expects("doClose");
-      _.set(vscode, "workspace.workspaceFolders", [
-        { uri: { fsPath: "rootFolderPath" } },
-        { uri: { fsPath: "testDestinationRoot" } },
-      ]);
+      sandbox
+        .stub(vscode.workspace, "workspaceFolders")
+        .value([
+          { uri: { fsPath: "rootFolderPath", scheme: "file" } },
+          { uri: { fsPath: "testDestinationRoot", scheme: "file" } },
+        ]);
       windowMock
         .expects("showInformationMessage")
         .withExactArgs(messages.default.artifact_generated_project_saved_for_future)
@@ -335,16 +354,18 @@ describe("vscode-youi-events unit test", () => {
         "success message",
         createAndClose,
         "project",
-        "testDestinationRoot/projectName"
+        "testDestinationRoot/projectName",
       );
     });
 
-    it("on success, project path parent folder is already openned in workspace ---> the project openned in a stand-alone folder", () => {
+    it("on success, project path parent folder is already openned in workspace ---> the project openned in a stand-alone", () => {
       eventsMock.expects("doClose");
-      _.set(vscode, "workspace.workspaceFolders", [
-        { uri: { fsPath: "rootFolderPath" } },
-        { uri: { fsPath: "testDestinationRoot" } },
-      ]);
+      sandbox
+        .stub(vscode.workspace, "workspaceFolders")
+        .value([
+          { uri: { fsPath: "rootFolderPath", scheme: "file" } },
+          { uri: { fsPath: "testDestinationRoot", scheme: "file" } },
+        ]);
       windowMock
         .expects("showInformationMessage")
         .withExactArgs(messages.default.artifact_generated_project_open_in_a_new_workspace)
@@ -355,14 +376,14 @@ describe("vscode-youi-events unit test", () => {
         "success message",
         openNewWorkspace,
         "project",
-        "testDestinationRoot/./projectName"
+        "testDestinationRoot/./projectName",
       );
     });
 
     it("on success, no workspace is opened ---> the project openned in a new multi-root workspace", () => {
       eventsMock.expects("doClose");
-      _.set(vscode, "workspace.workspaceFolders", []);
-      _.set(vscode, "workspace.workspaceFile", undefined);
+      sandbox.stub(vscode.workspace, "workspaceFolders").value([]);
+      sandbox.stub(vscode.workspace, "workspaceFile").value(undefined);
       windowMock
         .expects("showInformationMessage")
         .withExactArgs(messages.default.artifact_generated_project_add_to_workspace)
@@ -377,45 +398,115 @@ describe("vscode-youi-events unit test", () => {
         "success message",
         "Open the project in a multi-root workspace",
         "project",
-        "testDestinationRoot/./projectName"
+        "testDestinationRoot/./projectName",
+      );
+    });
+
+    it("on success, targetFolder is uri and the the project openned in a new multi-root workspace", () => {
+      eventsMock.expects("doClose");
+      sandbox.stub(vscode.workspace, "workspaceFolders").value([]);
+      sandbox.stub(vscode.workspace, "workspaceFile").value(undefined);
+      windowMock
+        .expects("showInformationMessage")
+        .withExactArgs(messages.default.artifact_generated_project_add_to_workspace)
+        .resolves();
+      commandsMock.expects("executeCommand").withArgs("vscode.openFolder").resolves();
+      workspaceMock.expects("updateWorkspaceFolders").withArgs(0, null);
+
+      fsMock.expects("existsSync").returns(false);
+      fsMock.expects("writeFileSync");
+
+      events.doGeneratorDone(
+        true,
+        "success message",
+        "Open the project in a multi-root workspace",
+        "project",
+        '{"uri":"abapdf://testDestinationRoot","name":"projectName"}',
+      );
+    });
+
+    it("on success, targetFolderPath is uri and the the project openned in a Open the project in a stand-alone", () => {
+      eventsMock.expects("doClose");
+      sandbox.stub(vscode.workspace, "workspaceFolders").value([]);
+      sandbox.stub(vscode.workspace, "workspaceFile").value(undefined);
+      windowMock
+        .expects("showInformationMessage")
+        .withExactArgs(messages.default.artifact_generated_project_open_in_a_new_workspace)
+        .resolves();
+      commandsMock.expects("executeCommand").withArgs("vscode.openFolder").resolves();
+
+      fsMock.expects("existsSync").returns(false);
+      fsMock.expects("writeFileSync");
+
+      events.doGeneratorDone(
+        true,
+        "success message",
+        "Open the project in a stand-alone",
+        "project",
+        '{"uri":"abapdf://testDestinationRoot","name":"projectName"}',
+      );
+    });
+
+    it("on success, targetFolderPath is uri and the the project openned in a Create the project and close it for future use", () => {
+      eventsMock.expects("doClose");
+      sandbox.stub(vscode.workspace, "workspaceFolders").value([]);
+      sandbox.stub(vscode.workspace, "workspaceFile").value(undefined);
+      windowMock
+        .expects("showInformationMessage")
+        .withExactArgs(messages.default.artifact_generated_project_saved_for_future)
+        .resolves();
+
+      fsMock.expects("existsSync").returns(false);
+      fsMock.expects("writeFileSync");
+
+      events.doGeneratorDone(
+        true,
+        "success message",
+        "Create the project and close it for future use",
+        "project",
+        '{"uri":"abapdf://testDestinationRoot","name":"projectName"}',
       );
     });
 
     it("on success, module is created", () => {
       eventsMock.expects("doClose");
-      _.set(vscode, "workspace.workspaceFolders", [
-        { uri: { fsPath: "rootFolderPath" } },
-        { uri: { fsPath: "testDestinationRoot" } },
-      ]);
+      sandbox
+        .stub(vscode.workspace, "workspaceFolders")
+        .value([
+          { uri: { fsPath: "rootFolderPath", scheme: "file" } },
+          { uri: { fsPath: "testDestinationRoot", scheme: "file" } },
+        ]);
       windowMock.expects("showInformationMessage").withExactArgs(messages.default.artifact_generated_module).resolves();
       return events.doGeneratorDone(
         true,
         "success message",
         createAndClose,
         "module",
-        "testDestinationRoot/projectName/../projectName"
+        "testDestinationRoot/projectName/../projectName",
       );
     });
 
     it("on success, not a module and not a project", () => {
       eventsMock.expects("doClose");
-      _.set(vscode, "workspace.workspaceFolders", [
-        { uri: { fsPath: "rootFolderPath" } },
-        { uri: { fsPath: "testDestinationRoot/../testDestinationRoot" } },
-      ]);
+      sandbox
+        .stub(vscode.workspace, "workspaceFolders")
+        .value([
+          { uri: { fsPath: "rootFolderPath", scheme: "file" } },
+          { uri: { fsPath: "testDestinationRoot/../testDestinationRoot", scheme: "file" } },
+        ]);
       windowMock.expects("showInformationMessage").withExactArgs(messages.default.artifact_generated_files).resolves();
       return events.doGeneratorDone(
         true,
         "success message",
         createAndClose,
         "files",
-        "testDestinationRoot/projectName/../projectName"
+        "testDestinationRoot/projectName/../projectName",
       );
     });
 
     it("on success with null targetFolderPath", () => {
       eventsMock.expects("doClose");
-      _.set(vscode, "workspace.workspaceFolders", [{ uri: { fsPath: "rootFolderPath" } }]);
+      sandbox.stub(vscode.workspace, "workspaceFolders").value([{ uri: { fsPath: "rootFolderPath", scheme: "file" } }]);
       windowMock.expects("showInformationMessage").withExactArgs(messages.default.artifact_generated_files).resolves();
       return events.doGeneratorDone(true, "success message", createAndClose, "files", null);
     });
@@ -424,6 +515,42 @@ describe("vscode-youi-events unit test", () => {
       eventsMock.expects("doClose");
       windowMock.expects("showErrorMessage").withExactArgs("error message");
       return events.doGeneratorDone(false, "error message", createAndClose, "files");
+    });
+  });
+
+  describe("getUniqueProjectName", () => {
+    it("should return baseName if it does not exist in workspace", () => {
+      sandbox.stub(vscode.workspace, "workspaceFolders").value([
+        { name: "Project1", uri: { scheme: "file" } },
+        { name: "Project2", uri: { scheme: "file" } },
+      ]);
+      const result = events["getUniqueProjectName"]("NewProject");
+      expect(result).to.equal("NewProject");
+    });
+
+    it("should return baseName(1) if baseName already exists", () => {
+      sandbox.stub(vscode.workspace, "workspaceFolders").value([
+        { name: "Project1", uri: { scheme: "file" } },
+        { name: "NewProject", uri: { scheme: "file" } },
+      ]);
+      const result = events["getUniqueProjectName"]("NewProject");
+      expect(result).to.equal("NewProject(1)");
+    });
+
+    it("should return baseName with incremented counter if multiple exist", () => {
+      sandbox.stub(vscode.workspace, "workspaceFolders").value([
+        { name: "NewProject", uri: { scheme: "file" } },
+        { name: "NewProject(1)", uri: { scheme: "file" } },
+        { name: "NewProject(2)", uri: { scheme: "file" } },
+      ]);
+      const result = events["getUniqueProjectName"]("NewProject");
+      expect(result).to.equal("NewProject(3)");
+    });
+
+    it("should handle empty workspace folders gracefully", () => {
+      sandbox.stub(vscode.workspace, "workspaceFolders").value(undefined);
+      const result = events["getUniqueProjectName"]("UniqueProject");
+      expect(result).to.equal("UniqueProject");
     });
   });
 });

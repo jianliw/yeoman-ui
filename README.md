@@ -1,3 +1,6 @@
+> [!WARNING]
+> **This repository has moved to [SAP/app-studio-toolkit/projects/yeoman-ui](https://github.com/SAP/app-studio-toolkit/tree/main/projects/yeoman-ui).**
+
 [![Continuous Integration](https://github.com/SAP/yeoman-ui/actions/workflows/ci.yml/badge.svg)](https://github.com/SAP/yeoman-ui/actions/workflows/ci.yml)
 [![Coverage Status](https://coveralls.io/repos/github/SAP/yeoman-ui/badge.svg?branch=master)](https://coveralls.io/github/SAP/yeoman-ui?branch=master)
 [![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/SAP/yeoman-ui.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/SAP/yeoman-ui/context:javascript)
@@ -11,7 +14,7 @@
 
 ## Description
 
-With the Application Wizard extension, you can benefit from a rich user experience for yeoman generators. This extension allows developers to reuse existing yeoman generators and provide wizard-like experience with no development efforts.
+With the Application Wizard extension you can benefit from a rich user experience for yeoman generators. This extension allows developers to reuse existing yeoman generators and provide wizard-like experience with no development efforts.
 
 This npm [mono-repo][mono-repo] currently contains:
 
@@ -42,6 +45,17 @@ To report an issue please use the github issue tracker. Please try to make sure 
 When an issue is reported, a committer will look at it and either confirm it as a real issue (by giving the "in progress" label), close it if it is not an issue, or ask for more details. In-progress issues are then either assigned to a committer in GitHub, reported in our internal issue handling system, or left open as "contribution welcome" for easy or not urgent fixes.
 
 An issue that is about a real bug is closed as soon as the fix is committed.
+
+## Compatibility matrix
+
+| Generator  | yo@4.3.1 | yo@5.1.0 | yo@6.0.0 |
+| ---------- | -------- | -------- | -------- |
+| cjs 5.10.0 | ✅       | ✅       | ✅       |
+| mjs 5.10.0 | ❌       | ✅       | ✅       |
+| cjs 6.0.1  | ❌       | ❌       | ❌       |
+| mjs 6.0.1  | ❌       | ✅       | ✅       |
+| cjs 7.5.1  | ❌       | ❌       | ❌       |
+| mjs 7.5.1  | ❌       | ❌       | ✅       |
 
 ## Contributing
 

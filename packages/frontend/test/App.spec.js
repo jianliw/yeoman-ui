@@ -1,10 +1,10 @@
 import { initComponent, unmount } from "./Utils";
 import App from "../src/youi/App";
-import Vue from "vue";
-import Vuetify from "vuetify";
 import { WebSocket } from "mock-socket";
+import { nextTick } from "vue";
+import { mount } from "@vue/test-utils";
+import YOUIBanner from "../src/components/YOUIBanner.vue";
 
-Vue.use(Vuetify);
 global.WebSocket = WebSocket;
 
 let wrapper;
@@ -15,8 +15,13 @@ describe("App.vue", () => {
   });
 
   it("createPrompt - method", () => {
-    wrapper = initComponent(App, {}, true);
+    wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
     wrapper.vm.prompts = [{ questions: [{ name: "generator", type: "list", guiType: "tiles" }] }];
+    wrapper.vm.rpc = {
+      invoke: jest.fn().mockImplementation(async () => {
+        return { data: {} };
+      }),
+    };
     expect(wrapper.vm.createPrompt().name).toBe();
     expect(wrapper.vm.createPrompt([]).name).toBe();
     expect(wrapper.vm.createPrompt([], "name").name).toBe("name");
@@ -25,16 +30,21 @@ describe("App.vue", () => {
 
   describe("currentPrompt - computed", () => {
     it("questions are not defined", () => {
-      wrapper = initComponent(App, {});
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
       wrapper.vm.prompts = [{}, {}];
       wrapper.vm.promptIndex = 1;
+      wrapper.vm.rpc = {
+        invoke: jest.fn().mockImplementation(async () => {
+          return { data: {} };
+        }),
+      };
       expect(wrapper.vm.currentPrompt.answers).toBeUndefined();
     });
   });
 
   describe("backButtonText - computed", () => {
     it("promptIndex is 1", () => {
-      wrapper = initComponent(App, {});
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
       wrapper.vm.prompts = [
         {
           questions: [
@@ -49,11 +59,16 @@ describe("App.vue", () => {
         {},
       ];
       wrapper.vm.promptIndex = 1;
+      wrapper.vm.rpc = {
+        invoke: jest.fn().mockImplementation(async () => {
+          return { data: {} };
+        }),
+      };
       expect(wrapper.vm.backButtonText).toEqual("Start Over");
     });
 
     it("promptIndex is 3", () => {
-      wrapper = initComponent(App, {});
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
       wrapper.vm.prompts = [
         {
           questions: [
@@ -68,13 +83,18 @@ describe("App.vue", () => {
         {},
       ];
       wrapper.vm.promptIndex = 3;
+      wrapper.vm.rpc = {
+        invoke: jest.fn().mockImplementation(async () => {
+          return { data: {} };
+        }),
+      };
       expect(wrapper.vm.backButtonText).toEqual("Back");
     });
   });
 
   describe("nextButtonText - computed", () => {
     it("promptIndex is 0", () => {
-      wrapper = initComponent(App, {});
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
       wrapper.vm.prompts = [
         {
           questions: [
@@ -94,37 +114,62 @@ describe("App.vue", () => {
         {},
       ];
       wrapper.vm.promptIndex = 0;
+      wrapper.vm.rpc = {
+        invoke: jest.fn().mockImplementation(async () => {
+          return { data: {} };
+        }),
+      };
       expect(wrapper.vm.nextButtonText).toEqual("Start");
     });
 
     it("promptIndex is 1", () => {
-      wrapper = initComponent(App, {});
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
       wrapper.vm.promptsInfoToDisplay = [{}, {}, {}];
       wrapper.vm.promptIndex = 1;
+      wrapper.vm.rpc = {
+        invoke: jest.fn().mockImplementation(async () => {
+          return { data: {} };
+        }),
+      };
       expect(wrapper.vm.nextButtonText).toEqual("Next");
     });
 
     it("promptIndex is 2", () => {
-      wrapper = initComponent(App, {});
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
       wrapper.vm.promptsInfoToDisplay = [{}, {}, {}];
       wrapper.vm.promptIndex = 2;
+      wrapper.vm.rpc = {
+        invoke: jest.fn().mockImplementation(async () => {
+          return { data: {} };
+        }),
+      };
       expect(wrapper.vm.nextButtonText).toEqual("Finish");
     });
   });
 
   describe("updateGeneratorsPrompt - method", () => {
     it("there are no prompts", () => {
-      wrapper = initComponent(App, {});
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
       wrapper.vm.prompts = [];
       wrapper.vm.promptIndex = -1;
+      wrapper.vm.rpc = {
+        invoke: jest.fn().mockImplementation(async () => {
+          return { data: {} };
+        }),
+      };
       wrapper.vm.updateGeneratorsPrompt();
       expect(wrapper.vm.prompts).toHaveLength(0);
     });
 
     it("there are prompts", () => {
-      wrapper = initComponent(App, {});
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
       wrapper.vm.prompts = [{}];
       wrapper.vm.promptIndex = 1;
+      wrapper.vm.rpc = {
+        invoke: jest.fn().mockImplementation(async () => {
+          return { data: {} };
+        }),
+      };
       wrapper.vm.updateGeneratorsPrompt([{}]);
       expect(wrapper.vm.prompts[0].questions).toHaveLength(1);
     });
@@ -132,28 +177,43 @@ describe("App.vue", () => {
 
   describe("isGeneratorsPrompt - method", () => {
     it("promptIndex = 0, selectGeneratorPromptExists = true", () => {
-      wrapper = initComponent(App, {}, true);
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
       wrapper.vm.promptIndex = 0;
+      wrapper.vm.rpc = {
+        invoke: jest.fn().mockImplementation(async () => {
+          return { data: {} };
+        }),
+      };
       wrapper.vm.selectGeneratorPromptExists = () => true;
       const result = wrapper.vm.isGeneratorsPrompt();
       expect(result).toBeTruthy();
     });
     it("promptIndex = 0, selectGeneratorPromptExists = false", () => {
-      wrapper = initComponent(App, {}, true);
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
       wrapper.vm.promptIndex = 0;
+      wrapper.vm.rpc = {
+        invoke: jest.fn().mockImplementation(async () => {
+          return { data: {} };
+        }),
+      };
       wrapper.vm.selectGeneratorPromptExists = () => false;
       const result = wrapper.vm.isGeneratorsPrompt();
       expect(result).toBeFalsy();
     });
     it("promptIndex > 0, selectGeneratorPromptExists = true", () => {
-      wrapper = initComponent(App, {}, true);
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
       wrapper.vm.promptIndex = 1;
+      wrapper.vm.rpc = {
+        invoke: jest.fn().mockImplementation(async () => {
+          return { data: {} };
+        }),
+      };
       wrapper.vm.selectGeneratorPromptExists = () => true;
       const result = wrapper.vm.isGeneratorsPrompt();
       expect(result).toBeFalsy();
     });
     it("promptIndex > 0, selectGeneratorPromptExists = false", () => {
-      wrapper = initComponent(App, {}, true);
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
       wrapper.vm.promptIndex = 1;
       wrapper.vm.selectGeneratorPromptExists = () => false;
       const result = wrapper.vm.isGeneratorsPrompt();
@@ -163,16 +223,26 @@ describe("App.vue", () => {
 
   describe("isNoGenerators - method", () => {
     it("no generators", () => {
-      wrapper = initComponent(App, {}, true);
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
       wrapper.vm.promptIndex = 0;
+      wrapper.vm.rpc = {
+        invoke: jest.fn().mockImplementation(async () => {
+          return { data: {} };
+        }),
+      };
       wrapper.vm.prompts = [{ name: "Select Generator", questions: [{ choices: [] }] }];
       wrapper.vm.$data.messages = { select_generator_name: "Select Generator" };
       expect(wrapper.vm.isNoGenerators).toBeTruthy();
     });
 
     it("generators exist", () => {
-      wrapper = initComponent(App, {}, true);
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
       wrapper.vm.promptIndex = 0;
+      wrapper.vm.rpc = {
+        invoke: jest.fn().mockImplementation(async () => {
+          return { data: {} };
+        }),
+      };
       wrapper.vm.prompts = [
         {
           name: "Select Generator",
@@ -184,16 +254,26 @@ describe("App.vue", () => {
     });
 
     it("generators exist question.name != 'generator'", () => {
-      wrapper = initComponent(App, {}, true);
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
       wrapper.vm.promptIndex = 0;
+      wrapper.vm.rpc = {
+        invoke: jest.fn().mockImplementation(async () => {
+          return { data: {} };
+        }),
+      };
       wrapper.vm.prompts = [{ name: "Select Generator", questions: [{}, { choices: [{}] }] }];
       wrapper.vm.$data.messages = { select_generator_name: "Select Generator" };
       expect(wrapper.vm.isNoGenerators).toBeTruthy();
     });
 
     it("prompt name != generators", () => {
-      wrapper = initComponent(App, {}, true);
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
       wrapper.vm.promptIndex = 0;
+      wrapper.vm.rpc = {
+        invoke: jest.fn().mockImplementation(async () => {
+          return { data: {} };
+        }),
+      };
       wrapper.vm.prompts = [{ name: "Prompt Name", questions: [{ choices: [{}] }] }];
       wrapper.vm.$data.messages = { select_generator_name: "Select Generator" };
       expect(wrapper.vm.isNoGenerators).toBeFalsy();
@@ -205,6 +285,11 @@ describe("App.vue", () => {
       wrapper = initComponent(App);
       wrapper.vm.prompts = [{}, {}];
       wrapper.vm.promptIndex = 1;
+      wrapper.vm.rpc = {
+        invoke: jest.fn().mockImplementation(async () => {
+          return { data: {} };
+        }),
+      };
       wrapper.vm.currentPrompt.status = "pending";
       wrapper.vm.setPromptList([]);
 
@@ -235,7 +320,11 @@ describe("App.vue", () => {
       wrapper.vm.promptIndex = 1;
       wrapper.vm.currentPrompt.status = "pending";
       wrapper.vm.setPromptList([]);
-
+      wrapper.vm.rpc = {
+        invoke: jest.fn().mockImplementation(async () => {
+          return { data: {} };
+        }),
+      };
       const answerFiori = {
         generator: "stam-generator",
       };
@@ -263,7 +352,11 @@ describe("App.vue", () => {
       wrapper.vm.promptIndex = 1;
       wrapper.vm.currentPrompt.status = "pending";
       wrapper.vm.setPromptList([]);
-
+      wrapper.vm.rpc = {
+        invoke: jest.fn().mockImplementation(async () => {
+          return { data: {} };
+        }),
+      };
       const answerFiori = {
         generator: "stam-generator",
       };
@@ -289,7 +382,7 @@ describe("App.vue", () => {
   describe("setQuestionProps - method", () => {
     // the delay ensures we call the busy indicator
     it("validate() with delay", async () => {
-      wrapper = initComponent(App, {}, true);
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
       wrapper.vm.prompts = [{}, {}];
       wrapper.vm.promptIndex = 1;
       wrapper.vm.rpc = {
@@ -300,14 +393,14 @@ describe("App.vue", () => {
 
       const questions = [{ name: "validateQ", validate: "__Function" }];
       wrapper.vm.showPrompt(questions, "promptName");
-      await Vue.nextTick();
+      await nextTick();
 
       const response = await questions[0].validate({});
       expect(response).toBe(questions[0].name);
     });
 
     it("set props", async () => {
-      wrapper = initComponent(App, {}, true);
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
       wrapper.vm.rpc = {
         invoke: jest.fn().mockImplementation((methodName, question) => {
           return question[1];
@@ -345,7 +438,7 @@ describe("App.vue", () => {
     });
 
     it("method that doesn't exist", async () => {
-      wrapper = initComponent(App, {}, true);
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
       wrapper.vm.rpc = {
         invoke: jest.fn().mockImplementation(async () => {
           throw "error";
@@ -357,8 +450,8 @@ describe("App.vue", () => {
       await expect(questions[0].validate()).rejects.toEqual("error");
     });
 
-    it("fiori project will not open in a stand-alone folder", async () => {
-      wrapper = initComponent(App, {});
+    it("fiori project will not open in a stand-alone", async () => {
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
       wrapper.vm.rpc = {
         invoke: jest.fn().mockImplementation((methodName, question) => {
           return question[1];
@@ -369,7 +462,7 @@ describe("App.vue", () => {
       wrapper.vm.promptIndex = 2;
 
       wrapper.vm.isToolsSuiteTypeGen = true;
-      const message = "The generated project will not open in a stand-alone folder.";
+      const message = "The generated project will not open in a stand-alone.";
       const image =
         "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHdpZHRoPSIxNyIgaGVpZ2h0PSIxNyIgdmlld0JveD0iMCAwIDE3IDE3Ij4NCiAgPGRlZnM+DQogICAgPGNsaXBQYXRoIGlkPSJjbGlwLWluZm9fdmNvZGUiPg0KICAgICAgPHJlY3Qgd2lkdGg9IjE3IiBoZWlnaHQ9IjE3Ii8+DQogICAgPC9jbGlwUGF0aD4NCiAgPC9kZWZzPg0KICA8ZyBpZD0iaW5mb192Y29kZSIgY2xpcC1wYXRoPSJ1cmwoI2NsaXAtaW5mb192Y29kZSkiPg0KICAgIDxnIGlkPSJHcm91cF8zNTQ0IiBkYXRhLW5hbWU9Ikdyb3VwIDM1NDQiPg0KICAgICAgPGcgaWQ9Ikdyb3VwXzM1NDMiIGRhdGEtbmFtZT0iR3JvdXAgMzU0MyI+DQogICAgICAgIDxnIGlkPSJHcm91cF8zNTQyIiBkYXRhLW5hbWU9Ikdyb3VwIDM1NDIiPg0KICAgICAgICAgIDxnIGlkPSJFbGxpcHNlXzU0IiBkYXRhLW5hbWU9IkVsbGlwc2UgNTQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzZmYmFmNyIgc3Ryb2tlLXdpZHRoPSIxLjUiPg0KICAgICAgICAgICAgPGNpcmNsZSBjeD0iOC41IiBjeT0iOC41IiByPSI4LjUiIHN0cm9rZT0ibm9uZSIvPg0KICAgICAgICAgICAgPGNpcmNsZSBjeD0iOC41IiBjeT0iOC41IiByPSI3Ljc1IiBmaWxsPSJub25lIi8+DQogICAgICAgICAgPC9nPg0KICAgICAgICAgIDxwYXRoIGlkPSJQYXRoXzE2NDAiIGRhdGEtbmFtZT0iUGF0aCAxNjQwIiBkPSJNMTg1Mi41LTI3NzkuNzMxdjQuNTA2IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMTg0NCAyNzg3Ljc1KSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNmZiYWY3IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS13aWR0aD0iMS41Ii8+DQogICAgICAgICAgPHBhdGggaWQ9IlBhdGhfMTY0MSIgZGF0YS1uYW1lPSJQYXRoIDE2NDEiIGQ9Ik0xODUyLjUtMjc3NC43MzFoMCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTE4NDQgMjc4MCkiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzZmYmFmNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2Utd2lkdGg9IjIiLz4NCiAgICAgICAgPC9nPg0KICAgICAgPC9nPg0KICAgIDwvZz4NCiAgPC9nPg0KPC9zdmc+DQo=";
 
@@ -391,8 +484,13 @@ describe("App.vue", () => {
 
   describe("getVsCodeApi - method", () => {
     it("not in vscode", () => {
-      wrapper = initComponent(App, {}, true);
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
       wrapper.vm.isInVsCode = () => false;
+      wrapper.vm.rpc = {
+        invoke: jest.fn().mockImplementation(async () => {
+          return { data: {} };
+        }),
+      };
       const vscodeApi = wrapper.vm.getVsCodeApi();
       expect(vscodeApi).toBeUndefined();
     });
@@ -400,8 +498,13 @@ describe("App.vue", () => {
 
   describe("showPrompt - method", () => {
     it("questions are empty array", async () => {
-      wrapper = initComponent(App, {}, true);
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
       const promise = wrapper.vm.showPrompt([], "test");
+      wrapper.vm.rpc = {
+        invoke: jest.fn().mockImplementation(async () => {
+          return { data: {} };
+        }),
+      };
       wrapper.vm.$data.resolve({});
       await promise;
       expect(wrapper.vm.$data.resolve).toBe(null);
@@ -411,7 +514,7 @@ describe("App.vue", () => {
 
   describe("setMessagesAndSaveState - method", () => {
     it("vscode api exists", async () => {
-      wrapper = initComponent(App, {}, true);
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
       wrapper.vm.rpc = {
         invoke: jest.fn().mockImplementation(async () => {
           return { data: {} };
@@ -424,7 +527,7 @@ describe("App.vue", () => {
     });
 
     it("vscode api no exists", async () => {
-      wrapper = initComponent(App, {}, true);
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
       wrapper.vm.rpc = {
         invoke: () => new Promise({ data: {} }),
       };
@@ -439,7 +542,7 @@ describe("App.vue", () => {
   });
 
   it("initRpc - method", () => {
-    wrapper = initComponent(App, {}, true);
+    wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
     wrapper.vm.rpc = {
       invoke: jest.fn(),
       registerMethod: jest.fn(),
@@ -482,7 +585,7 @@ describe("App.vue", () => {
   });
 
   it("runGenerator - method", () => {
-    wrapper = initComponent(App, {}, true);
+    wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
     wrapper.vm.rpc = {
       invoke: jest.fn(),
     };
@@ -496,16 +599,20 @@ describe("App.vue", () => {
   });
 
   it("log - method", () => {
-    wrapper = initComponent(App, {}, true);
+    wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
     wrapper.vm.logText = "test_";
-
+    wrapper.vm.rpc = {
+      invoke: jest.fn().mockImplementation(async () => {
+        return { data: {} };
+      }),
+    };
     wrapper.vm.log("test_log");
 
     expect(wrapper.vm.logText).toBe("test_test_log");
   });
 
   it("executeCommand:event - method", () => {
-    wrapper = initComponent(App, {}, true);
+    wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
     wrapper.vm.rpc = {
       invoke: jest.fn(),
     };
@@ -526,7 +633,7 @@ describe("App.vue", () => {
   });
 
   it("executeCommand:command - method", () => {
-    wrapper = initComponent(App, {}, true);
+    wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
     wrapper.vm.rpc = {
       invoke: jest.fn(),
     };
@@ -550,9 +657,43 @@ describe("App.vue", () => {
     invokeSpy.mockRestore();
   });
 
+  it("onShowOutputTabLink - method", () => {
+    wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
+    wrapper.vm.rpc = {
+      invoke: jest.fn(),
+    };
+    const invokeSpy = jest.spyOn(wrapper.vm.rpc, "invoke");
+    wrapper.vm.onShowOutputTabLink();
+
+    expect(invokeSpy).toHaveBeenCalledWith("executeCommand", ["sap.ux.appWizard.showOutputChannel", null]);
+
+    invokeSpy.mockRestore();
+  });
+
+  it("onShowOutputTabLink - triggered by Form @show-output-tab-link event", async () => {
+    let capturedFormVm;
+    wrapper = initComponent(App, {}, true, {
+      Form: {
+        template: "<div />",
+        emits: ["show-output-tab-link"],
+        created() {
+          capturedFormVm = this;
+        },
+      },
+    });
+    wrapper.vm.rpc = {
+      invoke: jest.fn(),
+    };
+    // Emit from the Form stub — verifies the template binding @show-output-tab-link wires to onShowOutputTabLink
+    capturedFormVm.$emit("show-output-tab-link");
+    await nextTick();
+
+    expect(wrapper.vm.rpc.invoke).toHaveBeenCalledWith("executeCommand", ["sap.ux.appWizard.showOutputChannel", null]);
+  });
+
   describe("next - method", () => {
     it("resolve is null", () => {
-      wrapper = initComponent(App, {});
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
       wrapper.vm.promptIndex = 1;
       wrapper.vm.stepValidated = true;
       wrapper.vm.prompts = [{}, {}];
@@ -563,7 +704,7 @@ describe("App.vue", () => {
       expect(wrapper.vm.stepValidated).toBeTruthy();
     });
     it("promptIndex is greater than prompt quantity, resolve is defined", () => {
-      wrapper = initComponent(App, {});
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
       wrapper.vm.resolve = jest.fn();
       wrapper.vm.reject = jest.fn();
       wrapper.vm.promptIndex = 1;
@@ -582,7 +723,7 @@ describe("App.vue", () => {
     });
 
     it("promptIndex is less than prompt length", () => {
-      wrapper = initComponent(App, {});
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
       wrapper.vm.resolve = jest.fn();
       wrapper.vm.reject = jest.fn();
       wrapper.vm.promptIndex = 0;
@@ -601,7 +742,7 @@ describe("App.vue", () => {
     });
 
     it("resolve method exists", () => {
-      wrapper = initComponent(App, {});
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
 
       wrapper.vm.resolve = () => true;
       wrapper.vm.promptIndex = 1;
@@ -618,7 +759,7 @@ describe("App.vue", () => {
 
   describe("back - method", () => {
     test("promptIndex is 0 (Select Generator)", () => {
-      wrapper = initComponent(App, {}, true);
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
       wrapper.vm.rpc = {
         invoke: jest.fn(),
         registerMethod: jest.fn(),
@@ -639,7 +780,7 @@ describe("App.vue", () => {
 
     // TODO - check the error
     test("promptIndex is updated", () => {
-      wrapper = initComponent(App, {}, true);
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
       wrapper.vm.rpc = {
         invoke: jest.fn(),
         registerMethod: jest.fn(),
@@ -658,7 +799,7 @@ describe("App.vue", () => {
     });
 
     test("set props", async () => {
-      wrapper = initComponent(App, {}, true);
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
       wrapper.vm.rpc = {
         invoke: jest.fn().mockImplementation((...args) => {
           return args[1][1];
@@ -669,14 +810,14 @@ describe("App.vue", () => {
       wrapper.vm.isReplaying = true;
       wrapper.vm.isWriting = true;
       wrapper.vm.showPrompt(questions, "promptName");
-      await Vue.nextTick();
+      await nextTick();
       expect(wrapper.vm.promptIndex).toBe(0);
     });
   });
 
   describe("gotoStep - method", () => {
     test("promptIndex is 1, goto 1 step back -> (Select Generator)", () => {
-      wrapper = initComponent(App, {}, true);
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
       wrapper.vm.rpc = {
         invoke: jest.fn(),
         registerMethod: jest.fn(),
@@ -697,7 +838,7 @@ describe("App.vue", () => {
 
     // TODO - check the error
     test("promptIndex is 3, goto 2 step back", async () => {
-      wrapper = initComponent(App, {}, true);
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
       wrapper.vm.rpc = {
         invoke: jest.fn(),
         registerMethod: jest.fn(),
@@ -716,7 +857,7 @@ describe("App.vue", () => {
     });
 
     test("promptIndex is 3, goto 3, exception thrown", async () => {
-      wrapper = initComponent(App, {}, true);
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
       wrapper.vm.rpc = {
         invoke: jest.fn(),
         registerMethod: jest.fn(),
@@ -789,7 +930,7 @@ describe("App.vue", () => {
 
   describe("generatorInstall - method", () => {
     it("status is pending", () => {
-      wrapper = initComponent(App, {});
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
 
       wrapper.vm.prompts = [{}, {}];
       wrapper.vm.promptIndex = 1;
@@ -818,10 +959,19 @@ describe("App.vue", () => {
   });
 
   describe("setBusyIndicator - method", () => {
+    beforeEach(() => {
+      jest.useFakeTimers("modern");
+    });
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
     it("prompts is empty", () => {
       wrapper = initComponent(App);
       wrapper.vm.prompts = [];
       wrapper.vm.setBusyIndicator();
+      // setBusyIndicator() triggers with 300 ms debounce delay
+      jest.advanceTimersByTime(350);
       expect(wrapper.vm.showBusyIndicator).toBeFalsy();
       expect(wrapper.vm.expectedShowBusyIndicator).toBeTruthy();
     });
@@ -832,6 +982,8 @@ describe("App.vue", () => {
       wrapper.vm.isDone = false;
       wrapper.vm.currentPrompt.status = "pending";
       wrapper.vm.setBusyIndicator();
+      // setBusyIndicator() triggers with 300 ms debounce delay
+      jest.advanceTimersByTime(350);
       expect(wrapper.vm.showBusyIndicator).toBeFalsy();
       expect(wrapper.vm.expectedShowBusyIndicator).toBeTruthy();
     });
@@ -842,34 +994,41 @@ describe("App.vue", () => {
       wrapper.vm.isDone = true;
       wrapper.vm.currentPrompt.status = "pending";
       wrapper.vm.setBusyIndicator();
+      // setBusyIndicator() triggers with 300 ms debounce delay
+      jest.advanceTimersByTime(350);
       expect(wrapper.vm.showBusyIndicator).toBeFalsy();
       expect(wrapper.vm.expectedShowBusyIndicator).toBeFalsy();
     });
 
-    it("Busy indicator can be set manually (to support custom plugin control)", async () => {
-      const sleeper = function (ms) {
-        return new Promise((resolve) => setTimeout(resolve, ms));
-      };
+    it("Busy indicator can be set manually (to support custom plugin control)", () => {
       wrapper = initComponent(App);
       wrapper.vm.setBusyIndicator(true);
+      // setBusyIndicator() triggers with 300 ms debounce delay
+      jest.advanceTimersByTime(350);
       expect(wrapper.vm.expectedShowBusyIndicator).toBeTruthy();
-      // 1 second delay before busy indicator is shown
-      await sleeper(1200);
+      // 1.5 second delay before busy indicator is shown
+      jest.advanceTimersByTime(1550);
       expect(wrapper.vm.showBusyIndicator).toBeTruthy();
 
       // If a custom plugin function is evaluating it can explicitly cancel the busy indicator on callback
       wrapper.vm.prompts = [{}, {}];
       wrapper.vm.isDone = false;
       wrapper.vm.currentPrompt.status = "evaluating";
-
       wrapper.vm.setBusyIndicator(false);
+      // setBusyIndicator() triggers with 300 ms debounce delay
+      jest.advanceTimersByTime(350);
       expect(wrapper.vm.showBusyIndicator).toBeFalsy();
     });
   });
 
   describe("toggleConsole - method", () => {
     it("showConsole property updated from toggleConsole()", () => {
-      wrapper = initComponent(App, {}, true);
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
+      wrapper.vm.rpc = {
+        invoke: jest.fn().mockImplementation(async () => {
+          return { data: {} };
+        }),
+      };
       wrapper.vm.toggleConsole();
       expect(wrapper.vm.showConsole).toBeTruthy();
       wrapper.vm.toggleConsole();
@@ -896,6 +1055,19 @@ describe("App.vue", () => {
       wrapper.vm.init();
 
       expect(wrapper.vm.consoleClass).toBe("consoleClassVisible");
+    });
+
+    it("registers form plugins", () => {
+      const registerMethodSpy = jest.fn();
+      wrapper = initComponent(App, { plugins: [{}, {}, {}] }, true, {
+        Form: {
+          template: "<span />",
+          methods: {
+            registerPlugin: registerMethodSpy,
+          },
+        },
+      });
+      expect(registerMethodSpy).toHaveBeenCalledTimes(3);
     });
   });
 
@@ -951,7 +1123,12 @@ describe("App.vue", () => {
   describe("setGenInWriting", () => {
     // TODO - check the error
     it("in writing state", () => {
-      wrapper = initComponent(App, {}, true);
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
+      wrapper.vm.rpc = {
+        invoke: jest.fn().mockImplementation(async () => {
+          return { data: {} };
+        }),
+      };
       wrapper.vm.prompts = [{}, { questions: [] }];
       wrapper.vm.promptIndex = 1;
       wrapper.vm.setGenInWriting(true);
@@ -961,7 +1138,12 @@ describe("App.vue", () => {
 
     // TODO - check the error
     it("not in writing state", () => {
-      wrapper = initComponent(App, {}, true);
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
+      wrapper.vm.rpc = {
+        invoke: jest.fn().mockImplementation(async () => {
+          return { data: {} };
+        }),
+      };
       wrapper.vm.prompts = [{}, { questions: [] }];
       wrapper.vm.promptIndex = 1;
       wrapper.vm.setGenInWriting(false);
@@ -970,7 +1152,12 @@ describe("App.vue", () => {
     });
 
     it("not in writing state, currentprompt is undefined", () => {
-      wrapper = initComponent(App, {}, true);
+      wrapper = initComponent(App, {}, false, ["vscode-textfield"]);
+      wrapper.vm.rpc = {
+        invoke: jest.fn().mockImplementation(async () => {
+          return { data: {} };
+        }),
+      };
       wrapper.vm.prompts = [{}, {}];
       wrapper.vm.promptIndex = 3;
       wrapper.vm.setGenInWriting(false);
@@ -1042,6 +1229,301 @@ describe("App.vue", () => {
       expect(wrapper.vm.toShowPromptMessage).toEqual(false);
       expect(wrapper.vm.promptMessageIcon).toEqual(null);
       expect(wrapper.vm.promptMessageClass).toEqual("");
+    });
+  });
+
+  describe("YOUIBanner Component in App.vue", () => {
+    let wrapper;
+
+    afterEach(() => {
+      if (wrapper) {
+        wrapper.unmount();
+      }
+    });
+
+    test("renders YOUIBanner when bannerProps title and ariaLabel is true", () => {
+      wrapper = mount(App, {
+        data() {
+          return {
+            bannerProps: {
+              text: "Test Banner",
+              ariaLabel: "Test Banner Label",
+              triggerActionFrom: "banner",
+            },
+          };
+        },
+      });
+
+      // Check if YOUIBanner is rendered
+      const banner = wrapper.findComponent(YOUIBanner);
+      expect(banner.exists()).toBe(true);
+
+      // Check if props are passed correctly
+      expect(banner.props("bannerProps")).toEqual({
+        text: "Test Banner",
+        ariaLabel: "Test Banner Label",
+        triggerActionFrom: "banner",
+      });
+
+      // Check if the banner text is rendered correctly
+      const bannerText = banner.find(".banner-text span");
+      expect(bannerText.exists()).toBe(true);
+      expect(bannerText.text()).toBe("Test Banner");
+    });
+
+    test("does not render YOUIBanner when title and aria label is not provided", () => {
+      wrapper = mount(App, {
+        data() {
+          return {
+            bannerProps: {
+              triggerActionFrom: "banner",
+            },
+          };
+        },
+      });
+
+      // Check if YOUIBanner is not rendered
+      const banner = wrapper.findComponent(YOUIBanner);
+      expect(banner.exists()).toBe(false);
+    });
+
+    test("renders YOUIBanner when currentPrompt name matches displayBannerForStep", () => {
+      const bannerProps = {
+        text: "Test Banner",
+        displayBannerForStep: "Test Step",
+        ariaLabel: "Test Banner Label",
+        icon: { source: "mdi-check-circle", type: "mdi" },
+        action: { text: "Click Me", url: "https://example.com" },
+        triggerActionFrom: "banner",
+      };
+
+      const currentPrompt = {
+        name: "Test Step",
+        status: "pending",
+        questions: [],
+      };
+
+      wrapper = mount(App, {
+        computed: {
+          shouldDisplayBanner() {
+            // Mock the computed property to return true
+            return (
+              bannerProps.displayBannerForStep &&
+              currentPrompt.name === bannerProps.displayBannerForStep &&
+              bannerProps.text &&
+              bannerProps.ariaLabel
+            );
+          },
+        },
+        data() {
+          return {
+            bannerProps,
+            currentPrompt,
+          };
+        },
+      });
+
+      wrapper.vm.setBanner(bannerProps);
+      expect(wrapper.vm.bannerProps).toEqual(bannerProps);
+
+      // Check if YOUIBanner is rendered
+      const banner = wrapper.findComponent(YOUIBanner);
+      expect(banner.exists()).toBe(true);
+    });
+
+    test("does not render YOUIBanner when currentPrompt name does not match displayBannerForStep", () => {
+      const bannerProps = {
+        text: "Test Banner",
+        displayBannerForStep: "Test Step",
+        ariaLabel: "Test Banner Label",
+        icon: { source: "mdi-check-circle", type: "mdi" },
+        action: { text: "Click Me", url: "https://example.com" },
+        triggerActionFrom: "banner",
+      };
+
+      const currentPrompt = {
+        name: "some other step",
+        status: "pending",
+        questions: [],
+      };
+
+      wrapper = mount(App, {
+        computed: {
+          shouldDisplayBanner() {
+            return (
+              bannerProps.displayBannerForStep &&
+              currentPrompt.name === bannerProps.displayBannerForStep &&
+              bannerProps.text &&
+              bannerProps.ariaLabel
+            );
+          },
+        },
+        data() {
+          return {
+            bannerProps,
+            currentPrompt,
+          };
+        },
+      });
+
+      wrapper.vm.setBanner(bannerProps);
+      // Check if YOUIBanner is not rendered
+      const banner = wrapper.findComponent(YOUIBanner);
+      expect(banner.exists()).toBe(false);
+    });
+
+    test("renders YOUIBanner when bannerProps title and ariaLabel is true and no displayBannerForStep is provided", () => {
+      wrapper = mount(App, {
+        data() {
+          return {
+            bannerProps: {
+              text: "Test Banner",
+              ariaLabel: "Test Banner Label",
+              triggerActionFrom: "banner",
+            },
+            currentPrompt: {
+              key: "Test Step",
+              status: "pending",
+              questions: [],
+            },
+          };
+        },
+      });
+
+      // Check if YOUIBanner is rendered
+      const banner = wrapper.findComponent(YOUIBanner);
+      expect(banner.exists()).toBe(true);
+
+      // Check if props are passed correctly
+      expect(banner.props("bannerProps")).toEqual({
+        text: "Test Banner",
+        ariaLabel: "Test Banner Label",
+        triggerActionFrom: "banner",
+      });
+
+      // Check if the banner text is rendered correctly
+      const bannerText = banner.find(".banner-text span");
+      expect(bannerText.exists()).toBe(true);
+      expect(bannerText.text()).toBe("Test Banner");
+    });
+  });
+
+  describe("shouldDisplayBanner - computed", () => {
+    let wrapper;
+
+    afterEach(() => {
+      if (wrapper) {
+        wrapper.unmount();
+      }
+    });
+
+    it("returns true when displayBannerForStep matches currentPrompt name and text and ariaLabel are defined", () => {
+      wrapper = mount(App, {
+        data() {
+          return {
+            bannerProps: {
+              displayBannerForStep: "Test Step",
+              text: "Test Banner",
+              ariaLabel: "Test Banner Label",
+            },
+            currentPrompt: {
+              name: "Test Step",
+            },
+          };
+        },
+      });
+
+      expect(wrapper.vm.shouldDisplayBanner).toBe(true);
+    });
+
+    it("returns false when displayBannerForStep does not match currentPrompt name", () => {
+      wrapper = mount(App, {
+        data() {
+          return {
+            bannerProps: {
+              displayBannerForStep: "Test Step",
+              text: "Test Banner",
+              ariaLabel: "Test Banner Label",
+            },
+            currentPrompt: {
+              name: "Other Step",
+            },
+          };
+        },
+      });
+
+      expect(wrapper.vm.shouldDisplayBanner).toBe(false);
+    });
+
+    it("returns false when text is not defined", () => {
+      wrapper = mount(App, {
+        data() {
+          return {
+            bannerProps: {
+              displayBannerForStep: "Test Step",
+              ariaLabel: "Test Banner Label",
+            },
+            currentPrompt: {
+              name: "Test Step",
+            },
+          };
+        },
+      });
+
+      expect(wrapper.vm.shouldDisplayBanner).toBe(false);
+    });
+
+    it("returns false when ariaLabel is not defined", () => {
+      wrapper = mount(App, {
+        data() {
+          return {
+            bannerProps: {
+              displayBannerForStep: "Test Step",
+              text: "Test Banner",
+            },
+            currentPrompt: {
+              name: "Test Step",
+            },
+          };
+        },
+      });
+
+      expect(wrapper.vm.shouldDisplayBanner).toBe(false);
+    });
+
+    it("returns true when displayBannerForStep is not defined but text and ariaLabel are defined", () => {
+      wrapper = mount(App, {
+        data() {
+          return {
+            bannerProps: {
+              text: "Test Banner",
+              ariaLabel: "Test Banner Label",
+            },
+            currentPrompt: {
+              name: "Test Step",
+            },
+          };
+        },
+      });
+
+      expect(wrapper.vm.shouldDisplayBanner).toBe(true);
+    });
+
+    it("returns false when neither text nor ariaLabel are defined", () => {
+      wrapper = mount(App, {
+        data() {
+          return {
+            bannerProps: {
+              displayBannerForStep: "Test Step",
+            },
+            currentPrompt: {
+              name: "Test Step",
+            },
+          };
+        },
+      });
+
+      expect(wrapper.vm.shouldDisplayBanner).toBe(false);
     });
   });
 });

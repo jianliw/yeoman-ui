@@ -13,7 +13,7 @@ import { IRpc } from "@sap-devx/webview-rpc/out.ext/rpc-common";
 import { GeneratorFilter, GeneratorType } from "./filter";
 import { IChildLogger } from "@vscode-logging/logger";
 import { IPrompt, MessageType } from "@sap-devx/yeoman-ui-types";
-import { SWA } from "./swa-tracker/swa-tracker-wrapper";
+import { AnalyticsWrapper } from "./usage-report/usage-analytics-wrapper";
 import { Output } from "./output";
 import { resolve } from "path";
 import { Env, EnvGen, GeneratorData, GeneratorNotFoundError } from "./utils/env";
@@ -23,7 +23,8 @@ import * as Environment from "yeoman-environment";
 import { Questions } from "yeoman-environment/lib/adapter";
 import { State } from "./utils/promise";
 import { Constants } from "./utils/constants";
-import { isEmpty } from "lodash";
+import { isUriFlow } from "./utils/workspaceFile";
+import { getFirstWorkspacePath } from "./utils/workspaceFolders";
 
 export interface IQuestionsPrompt extends IPrompt {
   questions: any[];
@@ -61,6 +62,7 @@ export class YeomanUI {
 
   private readonly TARGET_FOLDER_CONFIG_PROP = "ApplicationWizard.TargetFolder";
   private readonly SELECTED_WORKSPACE_CONFIG_PROP = "ApplicationWizard.Workspace";
+  private readonly HIDE_GENERATORS_PROP = "ApplicationWizard.HideGenerator";
   private onUncaughtException: (e: Error) => void;
 
   constructor(
@@ -69,7 +71,7 @@ export class YeomanUI {
     output: Output,
     logger: IChildLogger,
     uiOptions: any,
-    flowState: State<void>
+    flowState: State<void>,
   ) {
     this.rpc = rpc;
 
@@ -112,7 +114,7 @@ export class YeomanUI {
     return this.rpc.invoke("updateGeneratorsPrompt", [generators.questions]);
   }
 
-  public async _notifyGeneratorsInstall(args: any[], force: boolean) {
+  public async _notifyGeneratorsInstall(args: any[], force: boolean = false) {
     this.uiOptions.installGens = _.isObject(args) && _.isEmpty(args) ? undefined : args;
     if (!_.isNil(args)) {
       const isGeneratorsPrompt: boolean = await this.rpc.invoke("isGeneratorsPrompt");
@@ -178,8 +180,12 @@ export class YeomanUI {
     try {
       for (const file of await promises.readdir(folderPath)) {
         const resourcePath: string = path.join(folderPath, file);
-        if ((await promises.stat(resourcePath)).isDirectory()) {
-          result.childDirs.push(resourcePath);
+        try {
+          if ((await promises.stat(resourcePath)).isDirectory()) {
+            result.childDirs.push(resourcePath);
+          }
+        } catch (e) {
+          // ignore : broken soft link or access denied
         }
       }
     } catch (error) {
@@ -207,7 +213,7 @@ export class YeomanUI {
         logger: this.logger.getChildLogger({ label: generatorNamespace }),
         vscode: getVscode(), // TODO: remove this temporary workaround once a better solution is found,
         data: this.uiOptions.data,
-        swaTracker: SWA.getSWATracker(),
+        tracker: AnalyticsWrapper.getTracker(),
         appWizard: this.youiEvents.getAppWizard(),
       };
 
@@ -236,7 +242,9 @@ export class YeomanUI {
       if (!this.errorThrown) {
         // Without resolve this code worked only for absolute paths without / at the end.
         // Generator can put a relative path, path including . and .. and / at the end.
-        const dirsAfter = await this.getChildDirectories(resolve(this.getCwd(), this.gen.destinationRoot()));
+        const destinationRoot = this.gen.destinationRoot();
+        const pathAfet = this.getGeneratorDestinationPath(destinationRoot);
+        const dirsAfter = await this.getChildDirectories(pathAfet);
         this.onGeneratorSuccess(generatorNamespace, dirsBefore, dirsAfter);
       }
     } catch (error) {
@@ -245,7 +253,7 @@ export class YeomanUI {
       }
       this.onGeneratorFailure(generatorNamespace, this.getErrorWithAdditionalInfo(error, "runGenerator()"));
     } finally {
-      process.removeListener("uncaughtException", this.onUncaughtException);
+      this.onUncaughtException && process.removeListener("uncaughtException", this.onUncaughtException);
     }
   }
 
@@ -278,7 +286,7 @@ export class YeomanUI {
     });
 
     gen.on(errorEventName, (error: any) =>
-      this.onGeneratorFailure(generatorName, this.getErrorWithAdditionalInfo(error, `gen.on(${errorEventName})`))
+      this.onGeneratorFailure(generatorName, this.getErrorWithAdditionalInfo(error, `gen.on(${errorEventName})`)),
     );
 
     // when generator "restart" is selected, re-register the "uncaughtException" listener (with the updated context variables)
@@ -330,11 +338,12 @@ export class YeomanUI {
         this.resetHeaderTitle();
         const generators: IQuestionsPrompt = await this.getGeneratorsPrompt();
         await this._notifyGeneratorsInstall(this.uiOptions.installGens, true);
+        AnalyticsWrapper.updateGeneratorStarted();
         const response: any = await this.rpc.invoke("showPrompt", [generators.questions, "select_generator"]);
         generatorId = response.generator;
       }
       this.replayUtils.clear();
-      SWA.updateGeneratorStarted(generatorId, this.logger);
+      AnalyticsWrapper.updateGeneratorSelected(generatorId);
       await this.runGenerator(generatorId);
     } catch (error) {
       this.logError(error, "receiveIsWebviewReady");
@@ -346,19 +355,16 @@ export class YeomanUI {
   }
 
   private exploreGenerators() {
-    SWA.updateExploreAndInstallGeneratorsLinkClicked(this.logger);
     return vscode.commands.executeCommand("exploreGenerators");
   }
 
   private getCwd(): string {
     const targetFolderConfig = this.wsGet(this.TARGET_FOLDER_CONFIG_PROP);
-    if (!isEmpty(targetFolderConfig)) {
+    if (!_.isEmpty(targetFolderConfig)) {
       return targetFolderConfig;
     }
 
-    return Constants.IS_IN_BAS
-      ? Constants.HOMEDIR_PROJECTS
-      : _.get(vscode, "workspace.workspaceFolders[0].uri.fsPath", Constants.HOMEDIR_PROJECTS);
+    return Constants.IS_IN_BAS ? Constants.HOMEDIR_PROJECTS : getFirstWorkspacePath(Constants.HOMEDIR_PROJECTS);
   }
 
   public async showPrompt(questions: Questions<any>): Promise<inquirer.Answers> {
@@ -386,7 +392,6 @@ export class YeomanUI {
   }
 
   private async back(partialAnswers: Environment.Answers, numOfSteps: number): Promise<void> {
-    SWA.updateOneOfPreviousStepsClicked(this.generatorName, this.logger);
     this.replayUtils.start(this.currentQuestions, partialAnswers, numOfSteps);
     return this.runGenerator(this.generatorName);
   }
@@ -414,16 +419,20 @@ export class YeomanUI {
     // All the paths here absolute normilized paths.
     const targetFolderPathBeforeGen: string = _.get(resourcesBeforeGen, "targetFolderPath");
     const targetFolderPathAfterGen: string = _.get(resourcesAfterGen, "targetFolderPath");
+    let hasNewDirs: boolean = true;
     if (targetFolderPathBeforeGen === targetFolderPathAfterGen) {
       const newDirs: string[] = _.difference(
         _.get(resourcesAfterGen, "childDirs"),
-        _.get(resourcesBeforeGen, "childDirs")
+        _.get(resourcesBeforeGen, "childDirs"),
       );
       if (_.size(newDirs) === 1) {
         // One folder added by generator and targetFolderPath/destinationRoot was not changed by generator.
         // ---> Fiori project generator flow.
         targetFolderPath = newDirs[0];
-      } //else { //_.size(newDirs) = 0 (0 folders) or _.size(newDirs) > 1 (5 folders)
+      } else if (_.size(newDirs) === 0) {
+        hasNewDirs = false;
+      }
+      //else { // _.size(newDirs) > 1 (5 folders)
       // We don't know what is the correct targetFolderPath ---> no buttons should be shown.
       // No folder added by generator ---> Fiori module generator flow.
       // Many folders added by generator --->
@@ -446,23 +455,28 @@ export class YeomanUI {
     const message = this.uiOptions.messages.artifact_with_name_generated(generatorName);
     const generatedTemplatePath = targetFolderPath ? targetFolderPath : targetFolderPathBeforeGen;
     this.logger.debug(`done running yeomanui! ${message} You can find it at ${generatedTemplatePath}`);
-    SWA.updateGeneratorEnded(generatorName, true, this.logger);
-    this.youiEvents.doGeneratorDone(true, message, selectedWorkspace, type, targetFolderPath);
+    AnalyticsWrapper.updateGeneratorEnded(generatorName);
+    // when targetFolderPath is undefined and no files are generated, send type = '' to get the empty toast message
+    this.youiEvents.doGeneratorDone(true, message, selectedWorkspace, hasNewDirs ? type : "", targetFolderPath);
     this.setInitialProcessDir();
     this.flowState.resolve();
+    this.generatorName = ""; // reset generator name
   }
 
   private onGeneratorFailure(generatorName: string, error: any) {
     // avoid display the error multiple times due the same running
-    if (!this.errorThrown) {
-      this.errorThrown = true;
-      const messagePrefix = `${generatorName} generator failed`;
-      const errorMessage: string = this.logError(error, messagePrefix);
-      SWA.updateGeneratorEnded(generatorName, false, this.logger, errorMessage);
-      this.youiEvents.doGeneratorDone(false, errorMessage, "", "files");
-      this.setInitialProcessDir();
-      this.flowState.reject(error);
+    if (this.errorThrown) {
+      return;
     }
+
+    this.errorThrown = true;
+    const messagePrefix = `${generatorName} generator failed`;
+    const errorMsg = error?.message || error;
+    this.logError(error, messagePrefix);
+    this.youiEvents.doGeneratorDone(false, `${messagePrefix} - ${errorMsg}`, "", "files");
+    this.setInitialProcessDir();
+    this.flowState.reject(error);
+    this.generatorName = ""; // reset generator name
   }
 
   private onGenInstall(gen: any) {
@@ -485,8 +499,11 @@ export class YeomanUI {
   }
 
   private async createGeneratorPromptQuestions(gensData: GeneratorData[], genFilter: GeneratorFilter): Promise<any[]> {
+    //read the hidden generators from settings
+    const hiddenGenerators = this.wsGet(this.HIDE_GENERATORS_PROP);
+    const hiddenGeneratorsArray = hiddenGenerators.split(",").map((gen) => gen.trim());
     const generatorChoicePromises = _.map(gensData, (genData) => {
-      return this.getGeneratorChoice(genData, genFilter);
+      return this.getGeneratorChoice(genData, genFilter, hiddenGeneratorsArray);
     });
 
     const questions: any[] = [];
@@ -547,7 +564,7 @@ export class YeomanUI {
     return questions;
   }
 
-  private async getGeneratorChoice(genData: GeneratorData, filter: GeneratorFilter) {
+  private async getGeneratorChoice(genData: GeneratorData, filter: GeneratorFilter, hiddenGeneratorsArray: string[]) {
     const packageJson = genData.generatorPackageJson;
     const genMeta = genData.generatorMeta;
     const genFilter: GeneratorFilter = GeneratorFilter.create(_.get(packageJson, ["generator-filter"]));
@@ -556,11 +573,15 @@ export class YeomanUI {
     const type = _.includes(genFilter.types, GeneratorType.project)
       ? "project"
       : _.includes(genFilter.types, GeneratorType.module)
-      ? "module"
-      : "files";
+        ? "module"
+        : "files";
     this.typesMap.set(genMeta.namespace, type);
     _.includes(genFilter.types, "tools-suite") && this.generatorsToIgnoreArray.push(genMeta.namespace);
-    const hidden = _.includes(genFilter.categories, "hidden");
+    let hidden = _.includes(genFilter.categories, "hidden");
+    // check the settings and hide generators accordingly. example: @bas-dev/basic-multitarget-application
+    if (_.includes(hiddenGeneratorsArray, genMeta.namespace.split(":")[0])) {
+      hidden = true;
+    }
     if (!hidden && typesHasIntersection && categoriesHasIntersection) {
       return this.createGeneratorChoice(genMeta.namespace, genMeta.packagePath, packageJson);
     }
@@ -570,7 +591,7 @@ export class YeomanUI {
     let genImageUrl;
 
     try {
-      genImageUrl = await datauri(path.join(genPackagePath, YeomanUI.YEOMAN_PNG));
+      genImageUrl = await datauri(path.join(genPackagePath, _.get(packageJson, "image", YeomanUI.YEOMAN_PNG)));
     } catch (error) {
       genImageUrl = defaultImage.default;
       this.logger.debug(error);
@@ -630,5 +651,9 @@ export class YeomanUI {
         });
       }
     }
+  }
+
+  private getGeneratorDestinationPath(destinationRoot: string): string {
+    return isUriFlow(destinationRoot) ? destinationRoot : resolve(this.getCwd(), this.gen.destinationRoot());
   }
 }

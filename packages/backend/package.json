@@ -1,7 +1,7 @@
 {
   "name": "yeoman-ui",
   "displayName": "Application Wizard",
-  "version": "1.13.1",
+  "version": "1.25.0",
   "private": true,
   "description": "Provides rich user experience for Yeoman generators.",
   "categories": [
@@ -30,7 +30,7 @@
   "scripts": {
     "bundle": "webpack --mode production",
     "ci": "npm-run-all clean compile coverage bundle frontend:copy package coverage:copy",
-    "clean": "rimraf ./dist ./coverage *.vsix",
+    "clean": "shx rm -rf ./dist ./coverage *.vsix",
     "clean:frontend": "cd ./dist && shx rm -rf ./media",
     "compile": "tsc",
     "compile:watch": "tsc -watch",
@@ -44,9 +44,6 @@
     "ws:egRun": "node ./dist/src/webSocketServer/exploregens.js",
     "ws:run": "node ./dist/src/webSocketServer/youi.js"
   },
-  "extensionDependencies": [
-    "SAPOSS.app-studio-toolkit"
-  ],
   "contributes": {
     "commands": [
       {
@@ -72,6 +69,10 @@
       {
         "command": "runGenerator",
         "title": "Run Generator"
+      },
+      {
+        "command": "sap.ux.appWizard.showOutputChannel",
+        "title": "Show Output Channel"
       }
     ],
     "configuration": {
@@ -99,6 +100,12 @@
           "description": "The verbosity of logging according to the following order: trace > debug > info > warn > error > fatal > off.",
           "scope": "resource"
         },
+        "ApplicationWizard.HideGenerator": {
+          "type": "string",
+          "default": "",
+          "description": "Hide generators from the generator list. The generator name should be in the following format: namespace:generator-name. Generators must be separated by commas.",
+          "scope": "resource"
+        },
         "ApplicationWizard.TargetFolder": {
           "type": "string",
           "default": "",
@@ -108,7 +115,7 @@
         "ApplicationWizard.Workspace": {
           "type": "string",
           "enum": [
-            "Open the project in a stand-alone folder",
+            "Open the project in a stand-alone",
             "Open the project in a multi-root workspace",
             "Create the project and close it for future use"
           ],
@@ -153,6 +160,10 @@
         {
           "command": "yeomanUI._notifyGeneratorsChange",
           "when": "false"
+        },
+        {
+          "command": "sap.ux.appWizard.showOutputChannel",
+          "when": "false"
         }
       ],
       "editor/title": [
@@ -164,9 +175,7 @@
       ]
     }
   },
-  "activationEvents": [
-    "*"
-  ],
+  "activationEvents": [],
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
@@ -183,44 +192,49 @@
     }
   },
   "dependencies": {
-    "@sap-devx/webview-rpc": "0.3.1",
-    "@sap-devx/yeoman-ui-types": "^1.13.1",
-    "@sap/bas-sdk": "3.2.1",
-    "@sap/swa-for-sapbas-vsx": "1.2.7",
-    "@vscode-logging/logger": "1.2.3",
+    "@sap-devx/webview-rpc": "0.4.1",
+    "@sap-devx/yeoman-ui-types": "^1.25.0",
+    "@sap/bas-sdk": "3.13.7",
+    "@sap/swa-for-sapbas-vsx": "2.0.16",
+    "@vscode-logging/logger": "2.0.9",
     "chalk": "4.1.2",
-    "datauri": "3.0.0",
+    "cheerio": "^1.0.0-rc.12",
+    "datauri": "4.1.0",
     "humanize-string": "2.1.0",
-    "npm-registry-fetch": "11.0.0",
-    "object-hash": "2.2.0",
+    "npm-registry-fetch": "16.1.0",
+    "object-hash": "3.0.0",
     "strip-ansi": "6.0.0",
     "sudo-prompt": "9.2.1",
     "titleize": "2.1.0",
-    "yeoman-environment": "3.3.0",
-    "yeoman-ui-frontend": "^1.13.1"
+    "vscode-uri": "3.1.0",
+    "yeoman-environment": "3.19.3"
   },
   "devDependencies": {
+    "@types/cheerio": "^0.22.31",
     "@types/inquirer": "^7.3.3",
-    "@types/lodash": "^4.14.170",
+    "@types/lodash": "4.17.21",
     "@types/node": "^14.14.44",
     "@types/npm-registry-fetch": "^8.0.0",
     "@types/object-hash": "^2.1.0",
-    "@types/sinon": "^10.0.2",
+    "@types/sinon": "^17.0.3",
     "@types/vscode": "^1.50.0",
     "@types/webpack-env": "^1.16.2",
     "@types/ws": "^7.4.5",
     "@types/yeoman-environment": "^2.10.3",
-    "copy-webpack-plugin": "^9.0.0",
-    "lcov-result-merger": "3.1.0",
-    "sinon": "^11.1.1",
+    "@vscode/vsce": "2.24.0",
+    "copy-webpack-plugin": "^12.0.2",
+    "lcov-result-merger": "5.0.0",
+    "sinon": "^18.0.1",
     "string-replace-loader": "3.0.3",
     "ts-loader": "^9.2.3",
     "ts-node": "^9.1.1",
-    "vsce": "^1.100.1",
-    "webpack": "^5.56.0",
-    "webpack-cli": "^4.8.0",
-    "ws": "8.2.3"
+    "webpack": "^5.94.0",
+    "webpack-cli": "^5.1.4",
+    "ws": "8.17.1"
   },
+  "extensionDependencies": [
+    "SAPOSS.app-studio-toolkit"
+  ],
   "engines": {
     "vscode": "^1.50.0"
   },

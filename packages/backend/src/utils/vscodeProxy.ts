@@ -1,5 +1,6 @@
 import { set } from "lodash";
 import { join } from "path";
+import { URI } from "vscode-uri";
 
 export const getVscode = () => {
   try {
@@ -10,8 +11,8 @@ export const getVscode = () => {
   }
 };
 
-const filename: string = require.main.filename;
-const _isInTest = filename.includes(join("node_modules", "mocha"));
+const filename: string = require?.main?.filename;
+const _isInTest = filename?.includes(join("node_modules", "mocha"));
 
 const returnValue = (...args: any[]) => {
   if (_isInTest) {
@@ -33,7 +34,10 @@ const context = { globalState: globalStateObj, extensionPath: "" };
 
 const Uri = {
   file: (path?: string) => {
-    return { fsPath: path };
+    return URI.file(path || "");
+  },
+  parse: (path?: string) => {
+    return URI.parse(path || "");
   },
 };
 
@@ -41,6 +45,7 @@ const workspace = {
   getConfiguration: () => configObj,
   updateWorkspaceFolders: returnValue,
   workspaceFolders: [Uri.file()],
+  workspaceFile: Uri.file(),
 };
 
 const oRegisteredCommands = {};

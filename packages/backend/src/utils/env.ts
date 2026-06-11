@@ -22,6 +22,14 @@ export type GeneratorData = {
   generatorPackageJson: any;
 };
 
+type AdditionalGenerator = {
+  namespace: string;
+  displayName: string;
+  description: string;
+  homePage?: string;
+  image?: string;
+};
+
 export class GeneratorNotFoundError extends Error {
   constructor(message: string) {
     super(message);
@@ -80,7 +88,7 @@ class EnvUtil {
   private createEnvInstance(
     args?: string | string[],
     opts?: Environment.Options,
-    adapter?: TerminalAdapter
+    adapter?: TerminalAdapter,
   ): Environment<Environment.Options> {
     return Environment.createEnv(args, opts, adapter);
   }
@@ -155,11 +163,17 @@ class EnvUtil {
     const env: Environment<Environment.Options> = this.createEnvInstance(
       undefined,
       { sharedOptions: { forwardErrorToEnvironment: true } },
-      adapter
+      adapter,
     );
     // @types/yeoman-environment bug: generatorPath is still not exposed on LookupGeneratorMeta
     env.register(_.get(meta, "generatorPath"), genNamespace, meta.packagePath);
-    const gen = env.create(genNamespace, { options });
+    let gen: any = env.create(genNamespace, { options } as any);
+
+    // Handle async generator creation (ESM modules)
+    if (gen && typeof gen.then === "function") {
+      gen = await gen;
+    }
+
     return { env, gen };
   }
 
@@ -174,12 +188,37 @@ class EnvUtil {
       }
     });
 
+    // lookup for additional generators
+    let additional: AdditionalGenerator[] = [];
+    gensData.forEach((genData) => {
+      additional = additional.concat(...(genData.generatorPackageJson.additional_generators ?? []));
+    });
+    // remove duplicates
+    additional = _.uniqBy(additional, "namespace");
+    // get additional generators data
+    if (additional.length) {
+      const additionalGensMeta = this.allInstalledGensMeta.filter((genMeta) =>
+        additional.find((gen) => gen.namespace === genMeta.namespace),
+      );
+      const additionalPackageJsons = await NpmCommand.getPackageJsons(additionalGensMeta);
+      const additionalGensData = additionalPackageJsons.map((generatorPackageJson: any | undefined, index: number) => {
+        if (generatorPackageJson) {
+          return {
+            generatorMeta: additionalGensMeta[index],
+            // populate additional generator properties with main generator package.json
+            generatorPackageJson: { ...generatorPackageJson, ...additional[index] },
+          };
+        }
+      });
+      gensData.push(...additionalGensData);
+    }
+
     return _.compact(gensData);
   }
 
   public async getGeneratorNamesWithOutdatedVersion(): Promise<string[]> {
     const gensMeta: Environment.LookupGeneratorMeta[] = await this.getGensMetaByInstallationPath();
-    return NpmCommand.getPackageNamesWithOutdatedVersion(gensMeta);
+    return NpmCommand.getPackageNamesWithOutdatedVersion(this.genMainGensMeta(gensMeta));
   }
 
   public getGeneratorFullName(genNamespace: string): string {

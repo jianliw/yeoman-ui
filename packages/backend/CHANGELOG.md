@@ -3,6 +3,230 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.25.0](https://github.com/SAP/yeoman-ui/compare/v1.23.0...v1.25.0) (2026-05-13)
+
+### Features
+
+- **yeoman UI:** 37088 output tab link ([#940](https://github.com/SAP/yeoman-ui/issues/940)) ([f6e68ce](https://github.com/SAP/yeoman-ui/commit/f6e68ce84c1c8d79b81ea54a7fa6d6269d6aaa69)), closes [#37088](https://github.com/SAP/yeoman-ui/issues/37088) [#37088](https://github.com/SAP/yeoman-ui/issues/37088) [SAP/inquirer-gui#37088](https://github.com/SAP/inquirer-gui/issues/37088) [#37088](https://github.com/SAP/yeoman-ui/issues/37088)
+
+# [1.24.0](https://github.com/SAP/yeoman-ui/compare/v1.23.0...v1.24.0) (2026-05-12)
+
+### Features
+
+- **yeoman UI:** 37088 output tab link ([#940](https://github.com/SAP/yeoman-ui/issues/940)) ([f6e68ce](https://github.com/SAP/yeoman-ui/commit/f6e68ce84c1c8d79b81ea54a7fa6d6269d6aaa69)), closes [#37088](https://github.com/SAP/yeoman-ui/issues/37088) [#37088](https://github.com/SAP/yeoman-ui/issues/37088) [SAP/inquirer-gui#37088](https://github.com/SAP/inquirer-gui/issues/37088) [#37088](https://github.com/SAP/yeoman-ui/issues/37088)
+
+# [1.23.0](https://github.com/SAP/yeoman-ui/compare/v1.21.0...v1.23.0) (2026-03-24)
+
+### Bug Fixes
+
+- suppport loading of application wizard/generators when using a virtual fs ([#939](https://github.com/SAP/yeoman-ui/issues/939)) ([d9ee7d0](https://github.com/SAP/yeoman-ui/commit/d9ee7d07a1d185c60b60b0415f4e2c4bc51ed127))
+
+### Features
+
+- upgrade Lodash to 4.17.23 ([#933](https://github.com/SAP/yeoman-ui/issues/933)) ([326cae4](https://github.com/SAP/yeoman-ui/commit/326cae41eeb0d13378fc8ad7a04151af3429b76b))
+
+# [1.22.0](https://github.com/SAP/yeoman-ui/compare/v1.21.0...v1.22.0) (2026-02-10)
+
+### Features
+
+- upgrade Lodash to 4.17.23 ([#933](https://github.com/SAP/yeoman-ui/issues/933)) ([326cae4](https://github.com/SAP/yeoman-ui/commit/326cae41eeb0d13378fc8ad7a04151af3429b76b))
+
+# [1.21.0](https://github.com/SAP/yeoman-ui/compare/v1.20.5...v1.21.0) (2025-12-10)
+
+### Features
+
+- add esm generator support ([#921](https://github.com/SAP/yeoman-ui/issues/921)) ([56811e4](https://github.com/SAP/yeoman-ui/commit/56811e49380b86561d1c1b15db64f49e78f98df2))
+
+## [1.20.5](https://github.com/SAP/yeoman-ui/compare/v1.20.3...v1.20.5) (2025-12-04)
+
+**Note:** Version bump only for package yeoman-ui
+
+## [1.20.4](https://github.com/SAP/yeoman-ui/compare/v1.20.3...v1.20.4) (2025-12-04)
+
+**Note:** Version bump only for package yeoman-ui
+
+## [1.20.3](https://github.com/SAP/yeoman-ui/compare/v1.20.2...v1.20.3) (2025-12-04)
+
+### Bug Fixes
+
+- dependencies update ([#922](https://github.com/SAP/yeoman-ui/issues/922)) ([b8b798d](https://github.com/SAP/yeoman-ui/commit/b8b798d4deb9c7ce829c53c178dd8decd08d9986))
+
+## [1.20.2](https://github.com/SAP/yeoman-ui/compare/v1.20.1...v1.20.2) (2025-10-28)
+
+**Note:** Version bump only for package yeoman-ui
+
+## [1.20.1](https://github.com/SAP/yeoman-ui/compare/v1.20.0...v1.20.1) (2025-07-23)
+
+**Note:** Version bump only for package yeoman-ui
+
+# [1.20.0](https://github.com/SAP/yeoman-ui/compare/v1.19.6...v1.20.0) (2025-07-14)
+
+### Features
+
+- introduce new wizard logo ([#894](https://github.com/SAP/yeoman-ui/issues/894)) ([3f68e96](https://github.com/SAP/yeoman-ui/commit/3f68e96c05251b12c76fee50077d71565ef80601))
+
+## [1.19.6](https://github.com/SAP/yeoman-ui/compare/v1.19.5...v1.19.6) (2025-07-09)
+
+### Reverts
+
+- "feat: reload the workspace when regenerating remote projects ([#871](https://github.com/SAP/yeoman-ui/issues/871))" ([#897](https://github.com/SAP/yeoman-ui/issues/897)) ([73b51b3](https://github.com/SAP/yeoman-ui/commit/73b51b3e51b82c9a9f2ce997abc22d3dcb0e69cc))
+
+## [1.19.5](https://github.com/SAP/yeoman-ui/compare/v1.19.4...v1.19.5) (2025-06-10)
+
+**Note:** Version bump only for package yeoman-ui
+
+## [1.19.4](https://github.com/SAP/yeoman-ui/compare/v1.19.3...v1.19.4) (2025-06-10)
+
+**Note:** Version bump only for package yeoman-ui
+
+## [1.19.3](https://github.com/SAP/yeoman-ui/compare/v1.19.2...v1.19.3) (2025-05-22)
+
+### Bug Fixes
+
+- remove unnecessary comma ([1b2b8d7](https://github.com/SAP/yeoman-ui/commit/1b2b8d71adb102034fdd443c865fb9eab005cacf))
+
+## [1.19.2](https://github.com/SAP/yeoman-ui/compare/v1.19.1...v1.19.2) (2025-05-12)
+
+**Note:** Version bump only for package yeoman-ui
+
+## [1.19.1](https://github.com/SAP/yeoman-ui/compare/v1.19.0...v1.19.1) (2025-04-29)
+
+**Note:** Version bump only for package yeoman-ui
+
+# [1.19.0](https://github.com/SAP/yeoman-ui/compare/v1.18.0...v1.19.0) (2025-03-31)
+
+### Features
+
+- reload the workspace when regenerating remote projects ([#871](https://github.com/SAP/yeoman-ui/issues/871)) ([91e0902](https://github.com/SAP/yeoman-ui/commit/91e0902d7e05163966a34de1075f98e1860aa120))
+
+# [1.18.0](https://github.com/SAP/yeoman-ui/compare/v1.17.1...v1.18.0) (2025-03-05)
+
+### Features
+
+- support workspace with URL ([#866](https://github.com/SAP/yeoman-ui/issues/866)) ([ba114f9](https://github.com/SAP/yeoman-ui/commit/ba114f9ce903258b4cec523241049cd30de3a567))
+
+## [1.17.1](https://github.com/SAP/yeoman-ui/compare/v1.17.0...v1.17.1) (2025-01-09)
+
+**Note:** Version bump only for package yeoman-ui
+
+# [1.17.0](https://github.com/SAP/yeoman-ui/compare/v1.16.9...v1.17.0) (2025-01-08)
+
+### Features
+
+- configuration for showing additional sub generator tiles on the main page ([#862](https://github.com/SAP/yeoman-ui/issues/862)) ([6fa1330](https://github.com/SAP/yeoman-ui/commit/6fa133008b71c0d3495e716fed54658049c78957))
+
+## [1.16.9](https://github.com/SAP/yeoman-ui/compare/v1.16.8...v1.16.9) (2024-11-18)
+
+### Bug Fixes
+
+- [DEVXBUGS-11964] keeping the full path of modified folders instead of relative ones ([#859](https://github.com/SAP/yeoman-ui/issues/859)) ([50415d4](https://github.com/SAP/yeoman-ui/commit/50415d4b1f70210dd92211a73551322e10526fc8))
+
+## [1.16.8](https://github.com/SAP/yeoman-ui/compare/v1.16.7...v1.16.8) (2024-11-05)
+
+### Bug Fixes
+
+- last notification does not appear after the generator has fini… ([#857](https://github.com/SAP/yeoman-ui/issues/857)) ([dd7bec6](https://github.com/SAP/yeoman-ui/commit/dd7bec6b32e17ad55ffaa79100cc1403552f2445))
+
+## [1.16.7](https://github.com/SAP/yeoman-ui/compare/v1.16.6...v1.16.7) (2024-10-06)
+
+### Bug Fixes
+
+- **extension:** quick fix for vscode 1.94.x compatibility due to switch to ESM modules ([#853](https://github.com/SAP/yeoman-ui/issues/853)) ([823c0a5](https://github.com/SAP/yeoman-ui/commit/823c0a5ea9216c8ed80a01275bbdd8164eeac359))
+
+## [1.16.6](https://github.com/SAP/yeoman-ui/compare/v1.16.5...v1.16.6) (2024-08-22)
+
+### Bug Fixes
+
+- fs access flow fixing ([#847](https://github.com/SAP/yeoman-ui/issues/847)) ([c79c3f6](https://github.com/SAP/yeoman-ui/commit/c79c3f6c4c204e990b79b1db033500ed55f72863))
+- remove show done message if no files are generated ([#846](https://github.com/SAP/yeoman-ui/issues/846)) ([eed513e](https://github.com/SAP/yeoman-ui/commit/eed513e7b8a865e535da8cf7ffbc66f735f27aa1))
+
+## [1.16.5](https://github.com/SAP/yeoman-ui/compare/v1.16.4...v1.16.5) (2024-06-13)
+
+**Note:** Version bump only for package yeoman-ui
+
+## [1.16.4](https://github.com/SAP/yeoman-ui/compare/v1.16.3...v1.16.4) (2024-05-27)
+
+**Note:** Version bump only for package yeoman-ui
+
+## [1.16.3](https://github.com/SAP/yeoman-ui/compare/v1.16.2...v1.16.3) (2024-04-25)
+
+**Note:** Version bump only for package yeoman-ui
+
+## [1.16.2](https://github.com/SAP/yeoman-ui/compare/v1.16.1...v1.16.2) (2024-04-11)
+
+**Note:** Version bump only for package yeoman-ui
+
+## [1.16.1](https://github.com/SAP/yeoman-ui/compare/v1.16.0...v1.16.1) (2024-03-20)
+
+### Bug Fixes
+
+- exception in dispose ([#826](https://github.com/SAP/yeoman-ui/issues/826)) ([594b874](https://github.com/SAP/yeoman-ui/commit/594b874ed232f232d382836c4a767d12ee0523d2))
+
+# [1.16.0](https://github.com/SAP/yeoman-ui/compare/v1.15.0...v1.16.0) (2024-03-19)
+
+### Features
+
+- report closing wizard manually ([#823](https://github.com/SAP/yeoman-ui/issues/823)) ([6752634](https://github.com/SAP/yeoman-ui/commit/675263428d02c011894b41c414c6f4c4d4c3c2f8))
+
+# [1.15.0](https://github.com/SAP/yeoman-ui/compare/v1.14.7...v1.15.0) (2024-03-04)
+
+### Bug Fixes
+
+- [DEVXBUGS-11627] YUI prompts inputs are laggy on BAS - crashing generator ([#820](https://github.com/SAP/yeoman-ui/issues/820)) ([ba6b89e](https://github.com/SAP/yeoman-ui/commit/ba6b89ec43954ba8de240b3dc980218af0a09a70))
+
+### Features
+
+- usage analytics report to azure application insights ([#817](https://github.com/SAP/yeoman-ui/issues/817)) ([62e326d](https://github.com/SAP/yeoman-ui/commit/62e326d40a0caf8c7a10d68e523960acd87a3642))
+
+## [1.14.7](https://github.com/SAP/yeoman-ui/compare/v1.14.6...v1.14.7) (2024-02-20)
+
+**Note:** Version bump only for package yeoman-ui
+
+## [1.14.6](https://github.com/SAP/yeoman-ui/compare/v1.14.5...v1.14.6) (2024-02-20)
+
+**Note:** Version bump only for package yeoman-ui
+
+## [1.14.5](https://github.com/SAP/yeoman-ui/compare/v1.14.4...v1.14.5) (2024-02-20)
+
+### Bug Fixes
+
+- adding personal-edition as part of BAS environment ([#811](https://github.com/SAP/yeoman-ui/issues/811)) ([c99b7f0](https://github.com/SAP/yeoman-ui/commit/c99b7f07c0669a9dfb33df73998b4db56bcf7ed6))
+
+## [1.14.4](https://github.com/SAP/yeoman-ui/compare/v1.14.3...v1.14.4) (2024-02-08)
+
+### Bug Fixes
+
+- check for auto update generators only when it enabled ([#799](https://github.com/SAP/yeoman-ui/issues/799)) ([d070065](https://github.com/SAP/yeoman-ui/commit/d070065eb304d9997ddaaf744efd248d6838cfb4))
+- removing unnecessary library (yeoman-ui-frontend) - removing critical security issues ([#808](https://github.com/SAP/yeoman-ui/issues/808)) ([3d4d87d](https://github.com/SAP/yeoman-ui/commit/3d4d87d99c34a6dee0c5c796a26bf132c56d7bd9))
+
+## [1.14.3](https://github.com/SAP/yeoman-ui/compare/v1.14.2...v1.14.3) (2024-01-31)
+
+### Bug Fixes
+
+- revert usage `vsce` instead of `vscode/vsce` ([#797](https://github.com/SAP/yeoman-ui/issues/797)) ([9ad206c](https://github.com/SAP/yeoman-ui/commit/9ad206c75608ae58b1d9537d1e6d4d7878df4d8e))
+
+## [1.14.2](https://github.com/SAP/yeoman-ui/compare/v1.14.1...v1.14.2) (2024-01-30)
+
+### Bug Fixes
+
+- reset yeomanui panel state when closing window ([#796](https://github.com/SAP/yeoman-ui/issues/796)) ([eb3ba2f](https://github.com/SAP/yeoman-ui/commit/eb3ba2fa9118b0c078f4895f37222b0ddce7713d))
+
+## [1.14.1](https://github.com/SAP/yeoman-ui/compare/v1.14.0...v1.14.1) (2024-01-17)
+
+### Bug Fixes
+
+- already open Yeoman UI generator is closed on opening different … ([#792](https://github.com/SAP/yeoman-ui/issues/792)) ([d28b1e1](https://github.com/SAP/yeoman-ui/commit/d28b1e17d4956e86fab33978d3efdd3936fe9ffd))
+
+# [1.14.0](https://github.com/SAP/yeoman-ui/compare/v1.13.2...v1.14.0) (2024-01-16)
+
+### Features
+
+- **platform:** frontend Vue 3 and Vite ([#782](https://github.com/SAP/yeoman-ui/issues/782)) ([a129035](https://github.com/SAP/yeoman-ui/commit/a1290358df9c48dfd856eb7d54e38cec31c0302c))
+
+## [1.13.2](https://github.com/SAP/yeoman-ui/compare/v1.13.1...v1.13.2) (2024-01-09)
+
+**Note:** Version bump only for package yeoman-ui
+
 ## [1.13.1](https://github.com/SAP/yeoman-ui/compare/v1.13.0...v1.13.1) (2023-12-13)
 
 ### Bug Fixes
